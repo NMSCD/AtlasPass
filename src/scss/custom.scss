@@ -1,0 +1,61 @@
+@import "custom/var";
+@import "custom/form";
+@import "custom/scrollbar";
+@import "custom/background";
+@import "custom/pass";
+
+body {
+    background-color: rgb(50, 50, 50);
+
+    ::selection {
+        background: #662954;
+        color: white;
+        /* WebKit/Blink Browsers */
+    }
+
+    ::-moz-selection {
+        background: #662954;
+        color: white;
+        /* Gecko Browsers */
+    }
+
+    a {
+        color: $linkColour;
+    }
+}
+
+.pointer {
+    cursor: pointer;
+}
+
+.noselect {
+    -webkit-touch-callout: none;
+    /* iOS Safari */
+    -webkit-user-select: none;
+    /* Safari */
+    -khtml-user-select: none;
+    /* Konqueror HTML */
+    -moz-user-select: none;
+    /* Old versions of Firefox */
+    -ms-user-select: none;
+    /* Internet Explorer/Edge */
+    user-select: none;
+    /* Non-prefixed version, currently
+                                    supported by Chrome, Edge, Opera and Firefox */
+}
+
+.max-lines-1 {
+    white-space: nowrap;
+    overflow: hidden;
+    display: block;
+    text-overflow: ellipsis;
+}
+
+.row.no-space {
+    margin-left: 0;
+    margin-right: 0.5em;
+}
+
+.inner.wide {
+    max-width: 86em !important;
+}

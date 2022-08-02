@@ -1,0 +1,147 @@
+$star1: #ffcf91;
+$star2: #9db7ff;
+$star3: #ff9d9d;
+
+.background-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1;
+    background-color: #a4508b;
+    background-image: linear-gradient(326deg, #a4508b 0%, #5f0a87 74%);
+    opacity: 0.3;
+}
+
+.background {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    border-radius: 50%;
+    animation-timing-function: linear;
+    animation-duration: 10s;
+    animation-name: zoom;
+    animation-iteration-count: infinite;
+    animation-play-state: running;
+    z-index: -1;
+
+    /*
+function randomNumber(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min
+}
+
+const STAR_COUNT = 100
+let result = ""
+for(let i = 0; i < STAR_COUNT; i++){
+    result += `${randomNumber(-50, 50)}vw ${randomNumber(-50, 50)}vh ${randomNumber(0, 3)}px ${randomNumber(0, 3)}px #fff,`
+}
+console.log(result.substring(0, result.length - 1))
+*/
+
+    &.star1 {
+        box-shadow: -16vw -28vh 3px 0px $star1, -47vw -43vh 1px 3px $star1, 25vw 27vh 3px 3px $star1,
+            42vw -22vh 2px 3px $star1, -24vw 46vh 3px 1px $star1, -5vw -2vh 3px 3px $star1, 48vw 2vh 1px 3px $star1,
+            8vw -21vh 3px 1px $star1, 10vw -47vh 2px 0px $star1, -1vw 16vh 3px 2px $star1, -1vw 11vh 1px 2px $star1,
+            3vw -14vh 2px 3px $star1, -49vw 35vh 0px 2px $star1, -30vw -33vh 2px 0px $star1, 24vw -7vh 0px 1px $star1,
+            38vw -36vh 0px 0px $star1, 22vw 40vh 2px 0px $star1, -28vw -46vh 1px 1px $star1, -19vw 26vh 3px 2px $star1,
+            -32vw -31vh 1px 1px $star1, 9vw -48vh 2px 1px $star1, 28vw -8vh 0px 3px $star1, 43vw -3vh 2px 1px $star1,
+            18vw 2vh 3px 0px $star1, 17vw 46vh 2px 0px $star1, 33vw 11vh 1px 0px $star1, -29vw 44vh 3px 1px $star1,
+            -5vw -37vh 3px 1px $star1, 11vw 31vh 0px 0px $star1, -14vw 30vh 3px 2px $star1, -11vw -45vh 1px 0px $star1,
+            46vw -16vh 1px 2px $star1, 45vw -49vh 3px 3px $star1, -1vw -15vh 3px 2px $star1, -47vw 24vh 0px 3px $star1,
+            3vw 36vh 3px 0px $star1, 4vw -44vh 1px 1px $star1, -18vw 44vh 3px 1px $star1, 13vw 5vh 0px 3px $star1,
+            -48vw -7vh 0px 1px $star1, -50vw -18vh 1px 0px $star1, -35vw -29vh 1px 1px $star1,
+            -31vw -40vh 1px 2px $star1, 24vw 44vh 3px 3px $star1, -41vw -16vh 0px 0px $star1, 13vw 0vh 1px 1px $star1,
+            48vw 32vh 0px 0px $star1, -38vw -39vh 2px 2px $star1, 34vw 23vh 3px 3px $star1, 5vw 18vh 1px 1px $star1,
+            -7vw 13vh 2px 2px $star1, 29vw 34vh 1px 0px $star1, -4vw 25vh 1px 2px $star1, -14vw -1vh 0px 1px $star1,
+            -10vw -6vh 3px 2px $star1, -19vw 26vh 3px 3px $star1, 20vw 20vh 3px 1px $star1, -16vw 50vh 0px 0px $star1,
+            11vw 33vh 0px 0px $star1, 12vw -35vh 1px 3px $star1, 34vw -38vh 0px 3px $star1, -14vw 5vh 0px 1px $star1,
+            23vw 29vh 3px 3px $star1, -5vw -39vh 1px 3px $star1, 0vw 16vh 3px 0px $star1, -20vw 37vh 3px 1px $star1,
+            48vw -48vh 3px 3px $star1, 9vw -41vh 1px 3px $star1, -48vw -6vh 3px 2px $star1, -9vw -20vh 2px 3px $star1,
+            15vw 11vh 1px 2px $star1, -4vw -8vh 0px 0px $star1, 38vw -47vh 3px 2px $star1, 20vw 50vh 1px 2px $star1,
+            43vw -2vh 0px 3px $star1, -17vw -50vh 0px 2px $star1, -30vw 24vh 1px 0px $star1, -16vw 23vh 3px 2px $star1,
+            44vw -4vh 2px 3px $star1, 11vw 1vh 0px 0px $star1, -36vw 34vh 1px 1px $star1, -3vw 15vh 0px 1px $star1,
+            30vw -45vh 3px 1px $star1, -11vw 15vh 1px 0px $star1, 4vw 6vh 0px 0px $star1, -50vw -6vh 2px 1px $star1,
+            49vw -22vh 2px 2px $star1, -42vw 37vh 2px 0px $star1, -35vw 5vh 0px 1px $star1, -1vw 13vh 3px 1px $star1,
+            49vw 10vh 2px 1px $star1, 10vw 43vh 1px 3px $star1, 43vw 27vh 1px 0px $star1, -2vw -12vh 2px 2px $star1,
+            -37vw 38vh 2px 0px $star1, 17vw 17vh 2px 1px $star1, 0vw 15vh 3px 2px $star1, 9vw 5vh 1px 0px $star1,
+            -24vw 16vh 0px 0px $star1, 18vw -41vh 0px 1px $star1;
+    }
+
+    &.star2 {
+        animation-delay: 3.3s;
+        opacity: 0;
+        box-shadow: -45vw -35vh 3px 0px $star2, 25vw 38vh 0px 3px $star2, -23vw -42vh 0px 3px $star2,
+            19vw -11vh 3px 1px $star2, -18vw 29vh 2px 3px $star2, 27vw -23vh 3px 1px $star2, -17vw 46vh 0px 3px $star2,
+            37vw 36vh 1px 0px $star2, 47vw 38vh 3px 0px $star2, -30vw -48vh 3px 3px $star2, -24vw -35vh 3px 3px $star2,
+            33vw 0vh 2px 1px $star2, -17vw 24vh 0px 3px $star2, 6vw -14vh 0px 1px $star2, 23vw -44vh 2px 1px $star2,
+            2vw 43vh 3px 1px $star2, -47vw 49vh 0px 1px $star2, 38vw 28vh 0px 0px $star2, 45vw 1vh 0px 1px $star2,
+            -45vw -29vh 0px 2px $star2, -22vw 40vh 1px 1px $star2, -39vw -46vh 0px 3px $star2, 3vw -2vh 0px 3px $star2,
+            -34vw 7vh 2px 2px $star2, 0vw 50vh 3px 2px $star2, 5vw 12vh 2px 0px $star2, 16vw 28vh 2px 1px $star2,
+            46vw -2vh 3px 3px $star2, -6vw 9vh 0px 3px $star2, 38vw -11vh 0px 0px $star2, 27vw -47vh 2px 2px $star2,
+            2vw -44vh 2px 2px $star2, -30vw -26vh 1px 1px $star2, -6vw 32vh 3px 3px $star2, -34vw 29vh 2px 2px $star2,
+            -15vw -4vh 0px 2px $star2, 30vw 42vh 1px 0px $star2, 22vw 50vh 2px 3px $star2, -18vw 16vh 1px 1px $star2,
+            16vw -14vh 3px 0px $star2, -26vw 47vh 0px 0px $star2, 46vw -33vh 2px 3px $star2, -19vw 41vh 1px 1px $star2,
+            34vw -22vh 3px 1px $star2, 34vw 19vh 0px 0px $star2, 6vw -17vh 3px 2px $star2, 31vw 8vh 0px 3px $star2,
+            33vw -28vh 1px 3px $star2, -6vw -2vh 0px 2px $star2, 47vw -17vh 1px 2px $star2, 45vw -21vh 1px 3px $star2,
+            48vw -31vh 2px 0px $star2, -10vw 30vh 2px 2px $star2, -47vw -30vh 0px 1px $star2, 20vw -4vh 0px 1px $star2,
+            33vw -40vh 3px 1px $star2, -13vw 42vh 2px 0px $star2, -7vw -37vh 0px 1px $star2, -38vw -34vh 0px 0px $star2,
+            3vw -25vh 2px 0px $star2, 28vw 8vh 2px 1px $star2, 39vw 45vh 3px 0px $star2, 8vw 37vh 0px 2px $star2,
+            15vw 46vh 2px 0px $star2, 15vw 23vh 2px 1px $star2, 41vw -24vh 0px 0px $star2, 24vw -16vh 2px 2px $star2,
+            -41vw -50vh 3px 2px $star2, -17vw -16vh 3px 2px $star2, 34vw -33vh 2px 2px $star2,
+            -13vw -42vh 0px 0px $star2, 5vw -43vh 2px 2px $star2, 49vw -26vh 1px 3px $star2, -12vw -6vh 2px 2px $star2,
+            6vw -43vh 3px 3px $star2, 4vw 17vh 3px 3px $star2, -36vw -22vh 2px 1px $star2, 43vw 17vh 3px 2px $star2,
+            29vw 29vh 0px 2px $star2, -24vw -8vh 1px 0px $star2, -9vw 20vh 3px 3px $star2, -6vw -42vh 2px 3px $star2,
+            -1vw 40vh 0px 3px $star2, -41vw 48vh 2px 1px $star2, 45vw -49vh 2px 3px $star2, 8vw 5vh 0px 1px $star2,
+            15vw 29vh 1px 0px $star2, -3vw -3vh 0px 1px $star2, 46vw -31vh 1px 3px $star2, -29vw 1vh 1px 0px $star2,
+            -46vw -10vh 0px 2px $star2, 44vw 47vh 1px 3px $star2, 41vw 4vh 3px 1px $star2, -31vw 4vh 2px 2px $star2,
+            -4vw 28vh 1px 1px $star2, 14vw 26vh 3px 3px $star2, -42vw -48vh 3px 3px $star2, -24vw 41vh 1px 2px $star2,
+            44vw 47vh 2px 0px $star2, 17vw -34vh 2px 0px $star2;
+    }
+
+    &.star3 {
+        animation-delay: 6.6s;
+        opacity: 0;
+        box-shadow: -19vw 22vh 3px 3px $star3, -42vw -7vh 3px 3px $star3, 44vw -30vh 2px 2px $star3,
+            -27vw -5vh 3px 2px $star3, -44vw 42vh 1px 2px $star3, -34vw -9vh 0px 2px $star3, -18vw -2vh 2px 0px $star3,
+            -7vw -27vh 3px 1px $star3, -32vw 26vh 1px 3px $star3, -26vw -11vh 3px 1px $star3, -35vw -43vh 2px 2px $star3,
+            3vw 3vh 1px 1px $star3, -45vw 2vh 2px 0px $star3, -34vw -7vh 1px 0px $star3, 44vw -2vh 0px 1px $star3,
+            -34vw -45vh 0px 1px $star3, -1vw 19vh 1px 0px $star3, 24vw 49vh 1px 2px $star3, 5vw -39vh 1px 1px $star3,
+            0vw -30vh 0px 1px $star3, 30vw 11vh 1px 2px $star3, -2vw -4vh 3px 2px $star3, -17vw -33vh 0px 3px $star3,
+            -41vw 45vh 2px 3px $star3, 48vw -14vh 3px 1px $star3, -8vw 25vh 0px 3px $star3, 25vw -40vh 2px 0px $star3,
+            48vw -47vh 1px 1px $star3, -25vw -12vh 3px 1px $star3, 3vw 18vh 2px 3px $star3, -50vw 46vh 3px 0px $star3,
+            5vw -10vh 3px 2px $star3, 34vw -46vh 2px 1px $star3, 35vw 46vh 2px 2px $star3, 42vw 42vh 0px 1px $star3,
+            -26vw -40vh 3px 0px $star3, -41vw -17vh 0px 3px $star3, -22vw -5vh 1px 1px $star3, 24vw 49vh 0px 2px $star3,
+            -12vw -16vh 2px 3px $star3, 29vw -16vh 2px 1px $star3, 36vw 3vh 3px 3px $star3, -31vw -5vh 1px 3px $star3,
+            27vw -32vh 0px 1px $star3, 32vw 33vh 2px 2px $star3, -41vw 50vh 1px 1px $star3, -31vw 22vh 0px 1px $star3,
+            40vw 3vh 1px 2px $star3, -20vw -24vh 1px 2px $star3, -32vw 33vh 1px 3px $star3, -48vw 37vh 3px 3px $star3,
+            11vw 22vh 1px 1px $star3, -24vw 34vh 0px 3px $star3, 35vw -16vh 3px 1px $star3, -2vw 13vh 1px 1px $star3,
+            -17vw -37vh 3px 3px $star3, -15vw -27vh 3px 2px $star3, -16vw 8vh 2px 1px $star3, 44vw -30vh 0px 2px $star3,
+            -46vw -43vh 0px 0px $star3, -9vw 30vh 2px 0px $star3, 23vw 25vh 0px 3px $star3, 25vw -37vh 1px 0px $star3,
+            18vw 19vh 2px 1px $star3, -37vw 32vh 0px 3px $star3, 34vw -47vh 1px 2px $star3, -40vw -24vh 2px 1px $star3,
+            27vw 23vh 0px 3px $star3, -36vw 5vh 0px 2px $star3, -35vw 7vh 2px 3px $star3, -17vw 49vh 0px 0px $star3,
+            23vw -46vh 2px 2px $star3, -47vw 44vh 2px 1px $star3, 34vw 14vh 3px 3px $star3, 40vw 38vh 2px 2px $star3,
+            -48vw 48vh 3px 0px $star3, -27vw -32vh 0px 1px $star3, 8vw 12vh 0px 2px $star3, -1vw 16vh 0px 3px $star3,
+            -7vw -26vh 1px 0px $star3, -29vw -1vh 2px 2px $star3, -21vw 17vh 1px 3px $star3, 6vw -23vh 2px 3px $star3,
+            -6vw -14vh 3px 1px $star3, 24vw 27vh 3px 1px $star3, -32vw 13vh 0px 2px $star3, -4vw -11vh 2px 0px $star3,
+            11vw 23vh 3px 0px $star3, 19vw 37vh 3px 2px $star3, 46vw 31vh 0px 1px $star3, -37vw 27vh 2px 3px $star3,
+            33vw 22vh 1px 1px $star3, 43vw 3vh 2px 2px $star3, 0vw -31vh 0px 1px $star3, 49vw -18vh 1px 3px $star3,
+            7vw 36vh 0px 3px $star3, 22vw 1vh 1px 0px $star3, -42vw -44vh 1px 2px $star3, -6vw 27vh 3px 0px $star3,
+            -48vw 50vh 1px 1px $star3;
+    }
+}
+
+@keyframes zoom {
+    0% {
+        transform: scale(0.75);
+        opacity: 0;
+    }
+    50% {
+        transform: scale(1.25);
+        opacity: 0.5;
+    }
+    100% {
+        transform: scale(1.75);
+        opacity: 0;
+    }
+}

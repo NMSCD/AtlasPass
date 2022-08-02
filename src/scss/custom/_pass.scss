@@ -1,0 +1,63 @@
+.pass-container {
+    position: relative;
+    width: 80%;
+    margin: 2em;
+    background-color: #2f2f2f;
+
+    -webkit-filter: drop-shadow(4px 4px 4px rgba(0, 0, 0, 0.5));
+    filter: drop-shadow(4px 4px 4px rgba(0, 0, 0, 0.5));
+
+    .user-img-holder {
+        display: flex;
+        flex-direction: row;
+        overflow: none;
+        position: absolute;
+
+        .content {
+            position: relative;
+            border: 1px dashed transparent;
+            transition: border-color 250ms ease-in-out;
+
+            &:hover {
+                border-color: white;
+
+                img.user-img {
+                    border-color: black;
+                }
+                .resize-handle {
+                    opacity: 1;
+                }
+            }
+
+            img {
+                overflow: auto;
+                object-fit: contain;
+
+                cursor: grab;
+                &.user-img {
+                    border: 1px dashed transparent;
+                    transition: border-color 250ms ease-in-out;
+                }
+            }
+
+            .resize-handle {
+                position: absolute;
+                bottom: 0;
+                right: 0;
+                opacity: 0;
+                z-index: 10;
+                transition: opacity 250ms ease-in-out;
+                cursor: nwse-resize;
+            }
+        }
+    }
+}
+
+.pass-bg {
+    aspect-ratio: 16 / 9;
+
+    .pass-bg-img {
+        height: 100%;
+        object-fit: cover;
+    }
+}
