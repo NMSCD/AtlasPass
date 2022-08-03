@@ -2,16 +2,20 @@ import { FontOption } from "../contracts/fontOption";
 
 export const builtInFonts: Array<FontOption> = [
     {
-        name: 'NMS font',
+        name: 'Default',
         fontFamily: '',
+    },
+    {
+        name: 'NMS font (FuturaProBook)',
+        fontFamily: 'NMSFuturaProBook',
+    },
+    {
+        name: 'NMS font (GeoSans)',
+        fontFamily: 'NMSGeoSans',
     },
     {
         name: 'Expedition font',
-        fontFamily: '',
-    },
-    {
-        name: 'Custom',
-        fontFamily: '',
+        fontFamily: 'NMS Alphabet',
     },
 ];
 

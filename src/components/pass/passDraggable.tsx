@@ -15,6 +15,7 @@ export interface IPassDraggableState {
 export interface IPassDraggableProps {
     initX?: number;
     initY?: number;
+    rotation?: number;
     renderChild: (props: IPassDraggableProps, state: IPassDraggableState, functions: IPassDraggableFunctions) => JSX.Element;
     onEdit?: () => void;
     onDelete: () => void;
@@ -209,7 +210,7 @@ export const PassDraggable: Component<IPassDraggableProps> = (props: IPassDragga
             ref={dialog}
             draggable={false}
             class="user-img-holder"
-            style={"top: " + state.y + "px; left: " + state.x + "px;"}>
+            style={"top: " + state.y + "px; left: " + state.x + "px;" + ` transform: rotate(${props.rotation ?? 0}deg)`}>
             <div class="content">
                 {props.renderChild(props, state, funcs)}
                 <Show when={props.onEdit != null}>

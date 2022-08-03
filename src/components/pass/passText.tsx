@@ -16,6 +16,7 @@ export const PassText: Component<IPassTextProps> = (props: IPassTextProps) => {
     const [fontFamily, setFontFamily] = createSignal(builtInFonts[0].fontFamily);
     const [fontSize, setFontSize] = createSignal(20);
     const [fontColour, setFontColour] = createSignal('#FFFFFF');
+    const [fontRotation, setFontRotation] = createSignal(0);
 
     const renderText = (
         draggableProps: IPassDraggableProps,
@@ -27,7 +28,7 @@ export const PassText: Component<IPassTextProps> = (props: IPassTextProps) => {
             if (draggableState.width != undefined && draggableState.width > 0) {
                 return " width: " + draggableState.width + "px;";
             } else {
-                return " width: 200px;";
+                return " width: 300px;";
             }
         });
 
@@ -35,7 +36,7 @@ export const PassText: Component<IPassTextProps> = (props: IPassTextProps) => {
             if (draggableState.height != undefined && draggableState.height > 0) {
                 return " height: " + draggableState.height + "px;";
             } else {
-                return " height: 100px;";
+                return " height: 200px;";
             }
         });
 
@@ -59,11 +60,11 @@ export const PassText: Component<IPassTextProps> = (props: IPassTextProps) => {
         );
     }
 
-
     return (
         <>
             <PassDraggable
                 {...props}
+                rotation={fontRotation()}
                 renderChild={renderText}
                 onEdit={onOpen}
             />
@@ -119,6 +120,19 @@ export const PassText: Component<IPassTextProps> = (props: IPassTextProps) => {
                                     type="number"
                                 />
                             </FormControl>
+                        </Flex>
+                        <Flex>
+                            <FormControl flex="6" mt="0.5em" mb="0.5em">
+                                <FormLabel for="font-rotation">Rotation</FormLabel>
+                                <Input
+                                    id="font-rotation"
+                                    onInput={(e: any) => setFontRotation((e?.target?.value ?? 0))}
+                                    value={fontRotation()}
+                                    min="0"
+                                    max="360"
+                                    type="range"
+                                />
+                            </FormControl>
                             <Box width="15px"></Box>
                             <FormControl flex="2" mt="0.5em" mb="0.5em">
                                 <FormLabel for="text-font-size">Font colour</FormLabel>
@@ -129,8 +143,6 @@ export const PassText: Component<IPassTextProps> = (props: IPassTextProps) => {
                                     type="color"
                                 />
                             </FormControl>
-                        </Flex>
-                        <Flex>
                         </Flex>
                     </ModalBody>
                     <ModalFooter>
