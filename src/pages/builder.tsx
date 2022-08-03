@@ -1,62 +1,106 @@
 import {
     Accordion, AccordionButton, AccordionIcon, AccordionItem, AccordionPanel,
     Box, Button, Center, Checkbox, Flex, FormControl, FormLabel, Input, Select,
-    SelectContent, SelectIcon, SelectListbox, SelectOption, SelectOptionIndicator, SelectOptionText, SelectPlaceholder, SelectTrigger, SelectValue, Spacer, Text
+    SelectContent, SelectIcon, SelectListbox, SelectOption, SelectOptionIndicator, SelectOptionText, SelectPlaceholder, SelectTrigger, SelectValue, Text
 } from '@hope-ui/solid';
-// import html2canvas from 'html2canvas';
+import domtoimage from 'dom-to-image';
 import { Component, createSignal, For, onCleanup, Show } from 'solid-js';
+import { v4 as uuidv4 } from 'uuid';
 import { PassBackground } from '../components/pass/passBackground';
 import { PassImage } from '../components/pass/passImage';
-import { builtInBackgrounds } from '../constants/background';
-import domtoimage from 'dom-to-image';
+import { PassText } from '../components/pass/passText';
+import { builtInBackgrounds, imageFilter } from '../constants/background';
+import { UserUpload } from '../contracts/userUpload';
+import { downloadFile } from '../helper/fileHelper';
 
 
 export const BuilderPage: Component = () => {
     const [useCustomBackgroundImage, setUseCustomBackgroundImage] = createSignal(false);
     const [backgroundImage, setBackgroundImage] = createSignal(builtInBackgrounds[0].imgUrl);
-    const [backgroundImageOpacity, setBackgroundImageOpacity] = createSignal(0.7);
+    const [backgroundImageOpacity, setBackgroundImageOpacity] = createSignal(70);
 
     // const [userImage, setUserImage] = createSignal({} a);
-    const [userImages, setUserImages] = createSignal<Array<any>>([]);
+    const [userImages, setUserImages] = createSignal<Array<UserUpload>>([]);
+    const [userTexts, setUserTexts] = createSignal<Array<UserUpload>>([]);
+
+    const onSelectBackgroundImage = (event: any) => {
+        if (!event.target.files || event.target.files.length === 0) {
+            return;
+        }
+
+        setBackgroundImage(URL.createObjectURL(event.target.files[0]));
+        event.target.value = null;
+    }
 
     const onSelectUserImage = (event: any) => {
         if (!event.target.files || event.target.files.length === 0) {
             return;
         }
 
-        const objUrls: Array<any> = [];
+        const objUrls: Array<UserUpload> = [];
         for (const file of event.target.files) {
-            objUrls.push(URL.createObjectURL(file));
+            objUrls.push({
+                uuid: uuidv4(),
+                data: URL.createObjectURL(file),
+            });
         }
         setUserImages((prev) => [...prev, ...objUrls]);
         event.target.value = null;
     }
 
+    const deleteUserImage = (uuid: string) => () => {
+        setUserImages((prev: Array<UserUpload>) => {
+            const newUserImagesArray: Array<UserUpload> = [];
+            for (const userImg of prev) {
+                if (userImg.uuid !== uuid) {
+                    newUserImagesArray.push(userImg);
+                } else {
+                    URL.revokeObjectURL(userImg.data);
+                }
+            }
+            return newUserImagesArray;
+        });
+    }
+
+    const addUserText = () => {
+        const newTextObj: UserUpload = {
+            uuid: uuidv4(),
+            data: '',
+        };
+        setUserTexts((prev) => [...prev, newTextObj]);
+    }
+
     const download = async () => {
-        const dataUrl = await domtoimage.toPng(document.querySelector(".pass-container")!);
-        const link = document.createElement('a');
-        link.download = 'filename.png';
-        link.href = dataUrl;
-        link.click();
-        link.remove();
+        const cardElem = document.querySelector(".pass-container-img")!;
+        const dataUrl = await domtoimage.toPng(cardElem);
+        downloadFile(dataUrl, uuidv4().substring(0, 6) + '.png');
     }
 
     onCleanup(() => {
-        userImages().map(objectUrl => URL.revokeObjectURL(objectUrl));
+        userImages().map(imgObj => URL.revokeObjectURL(imgObj.data));
     });
 
     return (
-        <Flex minH="80vh">
+        <Flex minH="80vh" class="noselect">
             <Box flex="1">
                 <Center>
                     <Box class="pass-container" onDragOver={(ev: any) => ev?.preventDefault?.()}>
-                        <PassBackground
-                            backgroundImage={backgroundImage()}
-                            backgroundImageOpacity={backgroundImageOpacity()}
-                        />
-                        <For each={userImages()}>
-                            {imgUrl => (<PassImage src={imgUrl} />)}
-                        </For>
+                        <div class="pass-container-img">
+                            <PassBackground
+                                backgroundImage={backgroundImage()}
+                                backgroundImageOpacity={backgroundImageOpacity() / 100}
+                            />
+                            <For each={userImages()}>
+                                {imgObj => (
+                                    <PassImage src={imgObj.data} onDelete={deleteUserImage(imgObj.uuid)} />
+                                )}
+                            </For>
+                            <For each={userTexts()}>
+                                {textObj => (
+                                    <PassText onDelete={() => setUserTexts((prev: Array<UserUpload>) => prev.filter(t => t.uuid !== textObj.uuid))} />
+                                )}
+                            </For>
+                        </div>
                     </Box>
                 </Center>
             </Box>
@@ -75,7 +119,7 @@ export const BuilderPage: Component = () => {
                             >Use custom background image</Checkbox>
 
                             <Show when={useCustomBackgroundImage() == false}>
-                                <FormControl mt="0.5em">
+                                <FormControl mt="0.5em" mb="0.5em">
                                     <FormLabel for="backgroundImage">Background Image</FormLabel>
                                     <Select
                                         id="backgroundImage"
@@ -104,15 +148,30 @@ export const BuilderPage: Component = () => {
                             </Show>
 
                             <Show when={useCustomBackgroundImage()}>
-                                <FormControl mt="0.5em">
+                                <FormControl mt="0.5em" mb="0.5em">
                                     <FormLabel for="customBackgroundImage">Custom Background Image</FormLabel>
                                     <Input
                                         id="customBackgroundImage"
                                         placeholder="Background image"
+                                        accept={imageFilter}
                                         type="file"
+                                        onChange={onSelectBackgroundImage}
                                     />
                                 </FormControl>
                             </Show>
+
+                            <FormControl mt="0.5em" mb="0.5em">
+                                <FormLabel for="bg-opacity">Opacity</FormLabel>
+                                <Input
+                                    id="bg-opacity"
+                                    placeholder="Custom image"
+                                    onInput={(e: any) => setBackgroundImageOpacity(e?.target?.value ?? 100)}
+                                    value={backgroundImageOpacity()}
+                                    min='0'
+                                    max='100'
+                                    type="range"
+                                />
+                            </FormControl>
                         </AccordionPanel>
                     </AccordionItem>
 
@@ -122,20 +181,58 @@ export const BuilderPage: Component = () => {
                             <AccordionIcon />
                         </AccordionButton>
                         <AccordionPanel>
-                            <FormControl>
+                            <FormControl mt="0.5em" mb="0.5em">
                                 <FormLabel for="addCustomImage">Add custom image</FormLabel>
                                 <Input
                                     id="addCustomImage"
                                     placeholder="Custom image"
                                     onChange={onSelectUserImage}
+                                    accept={imageFilter}
                                     type="file"
                                 />
                             </FormControl>
                         </AccordionPanel>
                     </AccordionItem>
+
+                    <AccordionItem>
+                        <AccordionButton>
+                            <Text flex="1" textAlign="start">Text</Text>
+                            <AccordionIcon />
+                        </AccordionButton>
+                        <AccordionPanel>
+                            <FormControl mt="0.5em" mb="0.5em">
+                                <Button variant="outline" onClick={addUserText}>Add custom text</Button>
+                            </FormControl>
+                        </AccordionPanel>
+                    </AccordionItem>
+
+                    <AccordionItem>
+                        <AccordionButton>
+                            <Text flex="1" textAlign="start">Promote</Text>
+                            <AccordionIcon />
+                        </AccordionButton>
+                        <AccordionPanel>
+                            <FormControl mb="0.5em">
+                                <Checkbox
+                                    id="promoteNMSCD"
+                                // checked={useCustomBackgroundImage()}
+                                // onChange={() => setUseCustomBackgroundImage((prev) => !prev)}
+                                >Promote <span class="highlight-secondary">NMSCD</span></Checkbox>
+                            </FormControl>
+                            <FormControl mt="0.5em" mb="0.5em">
+                                <Checkbox
+                                    id="promoteAssistantNMS"
+                                // checked={useCustomBackgroundImage()}
+                                // onChange={() => setUseCustomBackgroundImage((prev) => !prev)}
+                                >Promote <span class="highlight-secondary">Assistant for No Man's Sky</span></Checkbox>
+                            </FormControl>
+                        </AccordionPanel>
+                    </AccordionItem>
                 </Accordion>
 
-                <Button onClick={download}>Download</Button>
+                <Box textAlign="center" mt="1em">
+                    <Button onClick={download}>Download</Button>
+                </Box>
             </Box>
         </Flex>
     );

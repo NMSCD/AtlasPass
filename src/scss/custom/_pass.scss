@@ -1,8 +1,10 @@
+.pass-container-img {
+    background-color: #000000;
+}
 .pass-container {
     position: relative;
     width: 80%;
     margin: 2em;
-    background-color: #2f2f2f;
 
     -webkit-filter: drop-shadow(4px 4px 4px rgba(0, 0, 0, 0.5));
     filter: drop-shadow(4px 4px 4px rgba(0, 0, 0, 0.5));
@@ -17,6 +19,7 @@
             position: relative;
             border: 1px dashed transparent;
             transition: border-color 250ms ease-in-out;
+            cursor: grab;
 
             &:hover {
                 border-color: white;
@@ -24,7 +27,7 @@
                 img.user-img {
                     border-color: black;
                 }
-                .resize-handle {
+                .show-on-hover {
                     opacity: 1;
                 }
             }
@@ -35,26 +38,51 @@
 
                 cursor: grab;
                 &.user-img {
+                    padding: 1em;
                     border: 1px dashed transparent;
                     transition: border-color 250ms ease-in-out;
                 }
+            }
+
+            .text-container {
+                padding: 1em;
+                overflow: hidden;
             }
 
             .resize-handle {
                 position: absolute;
                 bottom: 0;
                 right: 0;
-                opacity: 0;
                 z-index: 10;
-                transition: opacity 250ms ease-in-out;
                 cursor: nwse-resize;
+            }
+
+            .edit-handle {
+                position: absolute;
+                top: 0;
+                left: 0;
+                z-index: 10;
+                cursor: pointer;
+            }
+
+            .delete-handle {
+                position: absolute;
+                top: 0;
+                right: 0;
+                z-index: 10;
+                cursor: pointer;
+            }
+
+            .show-on-hover {
+                opacity: 0;
+                transition: opacity 250ms ease-in-out;
             }
         }
     }
 }
 
 .pass-bg {
-    aspect-ratio: 16 / 9;
+    aspect-ratio: 16 / 10;
 
     .pass-bg-img {
         height: 100%;

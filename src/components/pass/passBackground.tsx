@@ -15,7 +15,7 @@ export const PassBackground: Component<PassBackgroundProps> = (props: PassBackgr
             <Image
                 class="pass-bg-img"
                 opacity={props.backgroundImageOpacity ?? 1}
-                src={`/assets/img/${props.backgroundImage}`}
+                src={props.backgroundImage}
             />
         </Box>
     );
