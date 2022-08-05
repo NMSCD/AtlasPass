@@ -1,6 +1,6 @@
 {
   "name": "atlas-pass-nmscd",
-  "version": "0.0.0",
+  "version": "0.1.2",
   "description": "",
   "scripts": {
     "start": "vite",

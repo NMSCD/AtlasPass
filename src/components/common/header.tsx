@@ -44,7 +44,7 @@ export const Header: Component = () => {
                         <p>🞄&nbsp;<BasicLink href={site.nmscd.projectsPage} title={`${site.nmscd.nickName} projects`}>{`Other ${site.nmscd.nickName} projects`}</BasicLink></p>
                         <br />
                         <p>🞄&nbsp;<BasicLink href={site.nmscd.github} title={`${site.nmscd.nickName} Github Org`}>{`${site.nmscd.nickName} Github Organisation`}</BasicLink></p>
-                        <p>🞄&nbsp;<BasicLink href={site.nmscd.communitySearchGitRepo} title="Community Search source code">Community Search source code</BasicLink></p>
+                        <p>🞄&nbsp;<BasicLink href={site.gitRepo} title="Source code">Source code</BasicLink></p>
                         <br />
                     </DrawerBody>
                     <DrawerFooter>

@@ -9,6 +9,23 @@
     -webkit-filter: drop-shadow(4px 4px 4px rgba(0, 0, 0, 0.5));
     filter: drop-shadow(4px 4px 4px rgba(0, 0, 0, 0.5));
 
+    &.is-portrait {
+        max-height: 80vh;
+        width: unset;
+        aspect-ratio: 10 / 16;
+        margin-left: auto;
+        margin-right: auto;
+
+        .pass-bg,
+        .pass-container-img {
+            aspect-ratio: 10 / 16;
+        }
+    }
+
+    .pass-container-img {
+        max-height: 80vh;
+    }
+
     .user-img-holder {
         display: flex;
         flex-direction: row;
@@ -79,13 +96,22 @@
             }
         }
     }
+
+    .watermark {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        max-height: 2em;
+    }
 }
 
 .pass-bg {
     aspect-ratio: 16 / 10;
+    max-height: 80vh;
 
     .pass-bg-img {
         height: 100%;
+        max-height: 80vh;
         object-fit: cover;
     }
 }

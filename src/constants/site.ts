@@ -1,6 +1,7 @@
 export const site = {
     ref: 'nmscdAtlasPass',
     url: 'http://atlaspass.nmscd.com/',
+    gitRepo: 'https://github.com/NMSCD/AtlasPass',
     kurt: {
         fullName: 'Kurt Lourens',
         nickName: 'Khaoz-Topsy',
@@ -26,7 +27,6 @@ export const site = {
         website: 'http://www.nmscd.com',
         github: 'https://github.com/NMSCD',
         projectsPage: 'http://www.nmscd.com/projects.html',
-        communitySearchGitRepo: 'https://github.com/NMSCD/Community-Search',
     },
     assistantApps: {
         name: 'AssistantApps',

@@ -1,4 +1,5 @@
 export interface UserUpload {
     uuid: string;
-    data: string | any;
+    data?: any;
+    url?: string;
 }
