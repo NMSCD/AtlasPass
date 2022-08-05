@@ -98,7 +98,7 @@ export const BuilderPage: Component = () => {
     });
 
     return (
-        <Flex minH="80vh" class="noselect">
+        <Flex minH="calc(100vh - 80px)" class="noselect">
             <Box flex="1" overflow="hidden">
                 <Center onDragOver={(ev: any) => ev?.preventDefault?.()}>
                     <Box class={classNames('pass-container', isPortrait() ? 'is-portrait' : '')}>
