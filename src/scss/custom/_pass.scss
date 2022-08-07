@@ -5,6 +5,7 @@
 .pass-container {
     position: relative;
     margin: 2em;
+    width: 90%;
     max-width: 1280px;
     max-height: 750px;
     // overflow: hidden;
@@ -138,6 +139,7 @@
 
 .pass-bg {
     aspect-ratio: 16 / 10;
+    width: 100%;
     max-width: 1280px;
     max-height: 750px;
 
