@@ -3,8 +3,9 @@ import {
     Box, Button, Center, Checkbox, classNames, Flex, FormControl, FormLabel, Input, Radio, RadioGroup, Select,
     SelectContent, SelectIcon, SelectListbox, SelectOption, SelectOptionIndicator, SelectOptionText, SelectPlaceholder, SelectTrigger, SelectValue, Text, VStack
 } from '@hope-ui/solid';
-import { Component, createEffect, createSignal, For, onCleanup, Show } from 'solid-js';
+import { Component, createSignal, For, onCleanup, Show } from 'solid-js';
 import { v4 as uuidv4 } from 'uuid';
+import { Header } from '../components/common/header';
 import { PassBackground } from '../components/pass/passBackground';
 import { PassGrid } from '../components/pass/passGrid';
 import { PassImage } from '../components/pass/passImage';
@@ -18,6 +19,8 @@ import { downloadFile, exportToPng } from '../helper/fileHelper';
 
 
 export const BuilderPage: Component = () => {
+    const [isMobileAnnouncementAccepted, setMobileAnnouncementAccepted] = createSignal(false);
+
     const [useCustomBackgroundImage, setUseCustomBackgroundImage] = createSignal(false);
     const [isPortrait, setIsPortrait] = createSignal(false);
     const [enableGrid, setEnableGrid] = createSignal(false);
@@ -30,18 +33,16 @@ export const BuilderPage: Component = () => {
 
     const [promoteToShow, setPromoteToShow] = createSignal(PromoteType.none);
 
-    const [gridRefKey, setGridRefKey] = createSignal('1-1');
+    const [gridRefKey, setGridRefKey] = createSignal('0-0');
     let gridRef: any;
 
-    createEffect(() => {
-        setTimeout(() => setGridRefKeyFunc(), 250);
-    }, [gridRef, gridRefKey()]);
-
+    const timer = setInterval(() => setGridRefKeyFunc(), 1000);
     const setGridRefKeyFunc = () => {
         const {
             offsetWidth = 0,
             offsetHeight = 0,
         } = gridRef;
+
         setGridRefKey(`${offsetWidth}-${offsetHeight}`);
     }
 
@@ -110,12 +111,12 @@ export const BuilderPage: Component = () => {
         userImages()
             .filter(imgObj => imgObj.data != null)
             .map(imgObj => URL.revokeObjectURL(imgObj.data));
+        clearInterval(timer);
     });
 
-
     return (
-        <Flex minH="calc(100vh - 80px)" class="noselect">
-            <Box flex="1" overflow="hidden">
+        <Flex minH="calc(100vh - 80px)" class="builder noselect">
+            <Box class="builder-preview" overflow="hidden">
                 <Center flexDirection="column" onDragOver={(ev: any) => ev?.preventDefault?.()}>
                     <Box ref={gridRef} class={classNames('pass-container', isPortrait() ? 'is-portrait' : '')}>
                         <div class="pass-container-img">
@@ -155,13 +156,14 @@ export const BuilderPage: Component = () => {
                         <Show when={enableGrid() === true}>
                             <PassGrid
                                 gridRef={gridRef}
+                                isPortrait={isPortrait()}
                                 gridSnapPoints={gridSnapPoints()}
                             />
                         </Show>
                     </Box>
                 </Center>
             </Box>
-            <Box w="25vw" backgroundColor="rgba(0, 0, 0, 0.05)">
+            <Box class="builder-options" backgroundColor="rgba(0, 0, 0, 0.05)">
                 <Accordion allowMultiple>
                     <AccordionItem>
                         <AccordionButton>
@@ -316,9 +318,23 @@ export const BuilderPage: Component = () => {
 
                 <Box textAlign="center" mt="1em">
                     <Button onClick={download}>Download</Button>
-                    <Text mt="1em">Export resolution: <b>{gridRefKey().split('-')[0]}px</b> by <b>{gridRefKey().split('-')[1]}px</b></Text>
+                    <Show when={gridRefKey() !== '0-0'} fallback={<Text mt="1em">Calculating...</Text>}>
+                        <Text mt="1em">Export resolution: <b>{gridRefKey().split('-')[0]}px</b> by <b>{gridRefKey().split('-')[1]}px</b></Text>
+                    </Show>
                 </Box>
             </Box>
+            <Show when={isMobileAnnouncementAccepted() == false}>
+                <Box class="mobile-announcement">
+                    <Header />
+                    <Center minH="50vh">
+                        <Center flexDirection="column" pl="1em" pr="1em">
+                            <Text fontSize="1.5em">Please Note:</Text>
+                            <Text textAlign="center" mb="1.5em">This site generates your Atlas card based on what is displayed in the preview window. This means that if your display is small, the preview will be small and so the image export will be small. For best results please use this tool on a larger monitor.</Text>
+                            <Checkbox onChange={() => setMobileAnnouncementAccepted(true)}>I accept that my image will be low resolution</Checkbox>
+                        </Center>
+                    </Center>
+                </Box>
+            </Show>
         </Flex>
     );
 };

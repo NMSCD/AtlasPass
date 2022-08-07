@@ -25,7 +25,7 @@ export const PredefinedImageModal: Component<IPredefinedImageModalProps> = (prop
                     <ModalCloseButton />
                     <ModalHeader>Image selection</ModalHeader>
                     <ModalBody>
-                        <SimpleGrid columns={16} gap="$10">
+                        <SimpleGrid minChildWidth="4em" gap="$10">
                             <For each={props.images}>
                                 {imgStr => (
                                     <Center maxH="10em" maxW="10em">

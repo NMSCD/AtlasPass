@@ -3,6 +3,7 @@ import { Component, For } from 'solid-js';
 
 interface IPassGridProps {
     gridRef: any;
+    isPortrait: boolean;
     gridSnapPoints: number;
 }
 
