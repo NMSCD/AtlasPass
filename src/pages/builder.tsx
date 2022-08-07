@@ -1,11 +1,10 @@
 import {
     Accordion, AccordionButton, AccordionIcon, AccordionItem, AccordionPanel,
     Box, Button, Center, Checkbox, classNames, Flex, FormControl, FormLabel, Input, Radio, RadioGroup, Select,
-    SelectContent, SelectIcon, SelectListbox, SelectOption, SelectOptionIndicator, SelectOptionText, SelectPlaceholder, SelectTrigger, SelectValue, Switch, Text, VStack
+    SelectContent, SelectIcon, SelectListbox, SelectOption, SelectOptionIndicator, SelectOptionText, SelectPlaceholder, SelectTrigger, SelectValue, Text, VStack
 } from '@hope-ui/solid';
 import domtoimage from 'dom-to-image';
-import { Component, createSignal, For, onCleanup, Show } from 'solid-js';
-import { className } from 'solid-js/web';
+import { Component, createEffect, createSignal, For, onCleanup, Show } from 'solid-js';
 import { v4 as uuidv4 } from 'uuid';
 import { PassBackground } from '../components/pass/passBackground';
 import { PassGrid } from '../components/pass/passGrid';
@@ -14,7 +13,7 @@ import { PassText } from '../components/pass/passText';
 import { PredefinedImageModal } from '../components/predefinedImageModal';
 import { builtInBackgrounds, imageFilter } from '../constants/background';
 import { PromoteType } from '../constants/enum/promoteType';
-import { assistantNMSWatermark, nmscdWatermark, predefinedImages, predefinedPath } from '../constants/images';
+import { assistantAppsWatermark, assistantNMSWatermark, nmscdWatermark, predefinedImages, predefinedPath } from '../constants/images';
 import { UserUpload } from '../contracts/userUpload';
 import { downloadFile } from '../helper/fileHelper';
 
@@ -32,6 +31,21 @@ export const BuilderPage: Component = () => {
     const [userTexts, setUserTexts] = createSignal<Array<UserUpload>>([]);
 
     const [promoteToShow, setPromoteToShow] = createSignal(PromoteType.none);
+
+    const [gridRefKey, setGridRefKey] = createSignal('1-1');
+    let gridRef: any;
+
+    createEffect(() => {
+        setTimeout(() => setGridRefKeyFunc(), 250);
+    }, [gridRef, gridRefKey()]);
+
+    const setGridRefKeyFunc = () => {
+        const {
+            offsetWidth = 0,
+            offsetHeight = 0,
+        } = gridRef;
+        setGridRefKey(`${offsetWidth}-${offsetHeight}`);
+    }
 
     const onSelectBackgroundImage = (event: any) => {
         if (!event.target.files || event.target.files.length === 0) {
@@ -100,12 +114,11 @@ export const BuilderPage: Component = () => {
             .map(imgObj => URL.revokeObjectURL(imgObj.data));
     });
 
-    let gridRef: any;
 
     return (
         <Flex minH="calc(100vh - 80px)" class="noselect">
             <Box flex="1" overflow="hidden">
-                <Center onDragOver={(ev: any) => ev?.preventDefault?.()}>
+                <Center flexDirection="column" onDragOver={(ev: any) => ev?.preventDefault?.()}>
                     <Box ref={gridRef} class={classNames('pass-container', isPortrait() ? 'is-portrait' : '')}>
                         <div class="pass-container-img">
                             <PassBackground
@@ -136,6 +149,9 @@ export const BuilderPage: Component = () => {
                             </Show>
                             <Show when={promoteToShow() == PromoteType.assistantNMS}>
                                 <img class="watermark" src={assistantNMSWatermark} alt="AssistantNMS" />
+                            </Show>
+                            <Show when={promoteToShow() == PromoteType.assistantApps}>
+                                <img class="watermark" src={assistantAppsWatermark} alt="AssistantApps" />
                             </Show>
                         </div>
                         <Show when={enableGrid() === true}>
@@ -234,8 +250,8 @@ export const BuilderPage: Component = () => {
                                     placeholder="Custom image"
                                     onInput={(e: any) => setBackgroundImageOpacity(e?.target?.value ?? 100)}
                                     value={backgroundImageOpacity()}
-                                    min='0'
-                                    max='100'
+                                    min="0"
+                                    max="100"
                                     type="range"
                                 />
                             </FormControl>
@@ -292,6 +308,7 @@ export const BuilderPage: Component = () => {
                                         <Radio value={PromoteType.none}>None</Radio>
                                         <Radio value={PromoteType.nmscd}>Promote <span class="highlight-secondary">NMSCD</span></Radio>
                                         <Radio value={PromoteType.assistantNMS}>Promote <span class="highlight-secondary">Assistant for No Man's Sky</span></Radio>
+                                        <Radio value={PromoteType.assistantApps}>Promote <span class="highlight-secondary">Assistant Apps</span></Radio>
                                     </VStack>
                                 </RadioGroup>
                             </FormControl>
@@ -301,6 +318,7 @@ export const BuilderPage: Component = () => {
 
                 <Box textAlign="center" mt="1em">
                     <Button onClick={download}>Download</Button>
+                    <Text mt="1em">Export resolution: <b>{gridRefKey().split('-')[0]}px</b> by <b>{gridRefKey().split('-')[1]}px</b></Text>
                 </Box>
             </Box>
         </Flex>

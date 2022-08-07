@@ -3,6 +3,7 @@ export const predefinedPath = baseImages + 'predefined/';
 
 export const assistantNMSWatermark = baseImages + 'assistantNMSWatermark.png';
 export const nmscdWatermark = baseImages + 'nmscdWatermark.png';
+export const assistantAppsWatermark = baseImages + 'assistantAppsWatermark.png';
 
 export const predefinedImages = [
     'Atlas.png',

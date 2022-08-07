@@ -1,19 +1,5 @@
-import {
-    Accordion, AccordionButton, AccordionIcon, AccordionItem, AccordionPanel,
-    Box, Button, Center, Checkbox, createDisclosure, Flex, FormControl, FormLabel, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Radio, RadioGroup, Select,
-    SelectContent, SelectIcon, SelectListbox, SelectOption, SelectOptionIndicator, SelectOptionText, SelectPlaceholder, SelectTrigger, SelectValue, SimpleGrid, Text, VStack
-} from '@hope-ui/solid';
-import domtoimage from 'dom-to-image';
-import { Component, createSignal, For, onCleanup, Show } from 'solid-js';
-import { v4 as uuidv4 } from 'uuid';
-import { PassBackground } from '../components/pass/passBackground';
-import { PassImage } from '../components/pass/passImage';
-import { PassText } from '../components/pass/passText';
-import { builtInBackgrounds, imageFilter } from '../constants/background';
-import { PromoteType } from '../constants/enum/promoteType';
-import { assistantNMSWatermark, baseImages, nmscdWatermark, predefinedImages, predefinedPath } from '../constants/images';
-import { UserUpload } from '../contracts/userUpload';
-import { downloadFile } from '../helper/fileHelper';
+import { Button, Center, createDisclosure, Image, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, SimpleGrid } from '@hope-ui/solid';
+import { Component, For } from 'solid-js';
 
 interface IPredefinedImageModalProps {
     images: Array<string>;
@@ -43,7 +29,11 @@ export const PredefinedImageModal: Component<IPredefinedImageModalProps> = (prop
                             <For each={props.images}>
                                 {imgStr => (
                                     <Center maxH="10em" maxW="10em">
-                                        <img src={props.imagePath(imgStr)} alt={imgStr} onClick={onImageClick(imgStr)} />
+                                        <Image
+                                            src={props.imagePath(imgStr)} alt={imgStr}
+                                            class="predefined-img"
+                                            onClick={onImageClick(imgStr)}
+                                        />
                                     </Center>
                                 )}
                             </For>

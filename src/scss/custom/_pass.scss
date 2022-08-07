@@ -4,8 +4,9 @@
 
 .pass-container {
     position: relative;
-    width: 80%;
     margin: 2em;
+    max-width: 1280px;
+    max-height: 750px;
     // overflow: hidden;
 
     -webkit-filter: drop-shadow(4px 4px 4px rgba(0, 0, 0, 0.5));
@@ -137,11 +138,20 @@
 
 .pass-bg {
     aspect-ratio: 16 / 10;
-    max-height: 80vh;
+    max-width: 1280px;
+    max-height: 750px;
 
     .pass-bg-img {
         height: 100%;
-        max-height: 80vh;
         object-fit: cover;
+    }
+}
+
+.predefined-img {
+    cursor: pointer;
+    transition: all 150ms ease-in-out;
+
+    &:hover {
+        transform: scale(1.5);
     }
 }

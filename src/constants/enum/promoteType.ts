@@ -1,5 +1,6 @@
 export enum PromoteType {
     none,
     assistantNMS,
-    nmscd
+    nmscd,
+    assistantApps,
 }

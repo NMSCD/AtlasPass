@@ -5,6 +5,7 @@
 input[type="range"] {
     -webkit-appearance: none;
     background: transparent;
+    cursor: pointer;
 
     /* Track Styles  */
     /* chrome, safari, edge, firefox */
@@ -19,10 +20,12 @@ input[type="range"] {
         border-radius: 20px;
         box-shadow: inset 1px 1px 2px #57575780;
     }
+
     /* red track */
     &::-webkit-slider-runnable-track {
         background: #575757;
     }
+
     &::-moz-range-track {
         background: #575757;
     }
@@ -31,6 +34,7 @@ input[type="range"] {
     &::-moz-range-thumb:hover {
         cursor: grab;
     }
+
     &::-webkit-slider-thumb:hover {
         cursor: grab;
     }

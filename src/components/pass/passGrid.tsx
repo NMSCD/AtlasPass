@@ -8,7 +8,6 @@ interface IPassGridProps {
 
 export const PassGrid: Component<IPassGridProps> = (props: IPassGridProps) => {
 
-    console.log(props.gridRef.offsetWidth);
     const getNumColRow = () => {
         const divCols = Math.round((props.gridRef?.offsetWidth ?? 700) / props.gridSnapPoints);
         const divRows = Math.round((props.gridRef?.offsetHeight ?? 700) / props.gridSnapPoints);
