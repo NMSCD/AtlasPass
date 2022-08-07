@@ -3,7 +3,6 @@ import {
     Box, Button, Center, Checkbox, classNames, Flex, FormControl, FormLabel, Input, Radio, RadioGroup, Select,
     SelectContent, SelectIcon, SelectListbox, SelectOption, SelectOptionIndicator, SelectOptionText, SelectPlaceholder, SelectTrigger, SelectValue, Text, VStack
 } from '@hope-ui/solid';
-import domtoimage from 'dom-to-image';
 import { Component, createEffect, createSignal, For, onCleanup, Show } from 'solid-js';
 import { v4 as uuidv4 } from 'uuid';
 import { PassBackground } from '../components/pass/passBackground';
@@ -15,7 +14,7 @@ import { builtInBackgrounds, imageFilter } from '../constants/background';
 import { PromoteType } from '../constants/enum/promoteType';
 import { assistantAppsWatermark, assistantNMSWatermark, nmscdWatermark, predefinedImages, predefinedPath } from '../constants/images';
 import { UserUpload } from '../contracts/userUpload';
-import { downloadFile } from '../helper/fileHelper';
+import { downloadFile, exportToPng } from '../helper/fileHelper';
 
 
 export const BuilderPage: Component = () => {
@@ -26,7 +25,6 @@ export const BuilderPage: Component = () => {
     const [backgroundImage, setBackgroundImage] = createSignal(builtInBackgrounds[0].imgUrl);
     const [backgroundImageOpacity, setBackgroundImageOpacity] = createSignal(70);
 
-    // const [userImage, setUserImage] = createSignal({} a);
     const [userImages, setUserImages] = createSignal<Array<UserUpload>>([]);
     const [userTexts, setUserTexts] = createSignal<Array<UserUpload>>([]);
 
@@ -104,7 +102,7 @@ export const BuilderPage: Component = () => {
 
     const download = async () => {
         const cardElem = document.querySelector(".pass-container-img")!;
-        const dataUrl = await domtoimage.toPng(cardElem);
+        const dataUrl = await exportToPng(cardElem);
         downloadFile(dataUrl, uuidv4().substring(0, 6) + '.png');
     }
 
