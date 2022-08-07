@@ -116,7 +116,7 @@ export const PassText: Component<IPassTextProps> = (props: IPassTextProps) => {
                             </FormControl>
                             <Box width="15px"></Box>
                             <FormControl flex="2" mt="0.5em" mb="0.5em">
-                                <FormLabel for="text-font-size">Font size</FormLabel>
+                                <FormLabel for="text-font-size">Font size (px)</FormLabel>
                                 <Input
                                     id="text-to-display"
                                     onInput={(e: any) => setFontSize(e?.target?.value ?? 20)}
@@ -164,7 +164,7 @@ export const PassText: Component<IPassTextProps> = (props: IPassTextProps) => {
                             </FormControl>
                         </Flex>
                         <FormControl mt="0.5em" mb="0.5em">
-                            <FormLabel for="font-rotation">Rotation</FormLabel>
+                            <FormLabel for="font-rotation">Rotation (deg)</FormLabel>
                             <Input
                                 id="font-rotation"
                                 onInput={(e: any) => setFontRotation((e?.target?.value ?? 0))}
