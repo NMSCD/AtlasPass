@@ -8,6 +8,7 @@ import { Component, createSignal, For, onCleanup, Show } from 'solid-js';
 import { className } from 'solid-js/web';
 import { v4 as uuidv4 } from 'uuid';
 import { PassBackground } from '../components/pass/passBackground';
+import { PassGrid } from '../components/pass/passGrid';
 import { PassImage } from '../components/pass/passImage';
 import { PassText } from '../components/pass/passText';
 import { PredefinedImageModal } from '../components/predefinedImageModal';
@@ -21,6 +22,8 @@ import { downloadFile } from '../helper/fileHelper';
 export const BuilderPage: Component = () => {
     const [useCustomBackgroundImage, setUseCustomBackgroundImage] = createSignal(false);
     const [isPortrait, setIsPortrait] = createSignal(false);
+    const [enableGrid, setEnableGrid] = createSignal(false);
+    const [gridSnapPoints, setGridSnapPoints] = createSignal(50);
     const [backgroundImage, setBackgroundImage] = createSignal(builtInBackgrounds[0].imgUrl);
     const [backgroundImageOpacity, setBackgroundImageOpacity] = createSignal(70);
 
@@ -97,11 +100,13 @@ export const BuilderPage: Component = () => {
             .map(imgObj => URL.revokeObjectURL(imgObj.data));
     });
 
+    let gridRef: any;
+
     return (
         <Flex minH="calc(100vh - 80px)" class="noselect">
             <Box flex="1" overflow="hidden">
                 <Center onDragOver={(ev: any) => ev?.preventDefault?.()}>
-                    <Box class={classNames('pass-container', isPortrait() ? 'is-portrait' : '')}>
+                    <Box ref={gridRef} class={classNames('pass-container', isPortrait() ? 'is-portrait' : '')}>
                         <div class="pass-container-img">
                             <PassBackground
                                 backgroundImage={backgroundImage()}
@@ -109,12 +114,21 @@ export const BuilderPage: Component = () => {
                             />
                             <For each={userImages()}>
                                 {imgObj => (
-                                    <PassImage src={imgObj.url ?? imgObj.data} onDelete={deleteUserImage(imgObj.uuid)} />
+                                    <PassImage
+                                        src={imgObj.url ?? imgObj.data}
+                                        enableGridSnap={enableGrid()}
+                                        gridSnapPoints={gridSnapPoints()}
+                                        onDelete={deleteUserImage(imgObj.uuid)}
+                                    />
                                 )}
                             </For>
                             <For each={userTexts()}>
                                 {textObj => (
-                                    <PassText onDelete={() => setUserTexts((prev: Array<UserUpload>) => prev.filter(t => t.uuid !== textObj.uuid))} />
+                                    <PassText
+                                        enableGridSnap={enableGrid()}
+                                        gridSnapPoints={gridSnapPoints()}
+                                        onDelete={() => setUserTexts((prev: Array<UserUpload>) => prev.filter(t => t.uuid !== textObj.uuid))}
+                                    />
                                 )}
                             </For>
                             <Show when={promoteToShow() == PromoteType.nmscd}>
@@ -124,6 +138,12 @@ export const BuilderPage: Component = () => {
                                 <img class="watermark" src={assistantNMSWatermark} alt="AssistantNMS" />
                             </Show>
                         </div>
+                        <Show when={enableGrid() === true}>
+                            <PassGrid
+                                gridRef={gridRef}
+                                gridSnapPoints={gridSnapPoints()}
+                            />
+                        </Show>
                     </Box>
                 </Center>
             </Box>
@@ -140,13 +160,30 @@ export const BuilderPage: Component = () => {
                                 checked={useCustomBackgroundImage()}
                                 onChange={() => setUseCustomBackgroundImage((prev) => !prev)}
                             >Use custom background image</Checkbox>
-
                             <br />
                             <Checkbox
                                 mt="0.5em"
                                 checked={isPortrait()}
                                 onChange={() => setIsPortrait((prev) => !prev)}
                             >Portrait mode</Checkbox>
+                            <br />
+                            <Checkbox
+                                mt="0.5em"
+                                checked={enableGrid()}
+                                onChange={() => setEnableGrid((prev) => !prev)}
+                            >Enable grid snap <i>(experimental)</i></Checkbox>
+
+                            <Show when={enableGrid() == true}>
+                                <FormControl mt="0.5em" mb="0.5em">
+                                    <FormLabel for="grid-snap-points">Grid snap points</FormLabel>
+                                    <Input
+                                        id="grid-snap-points"
+                                        onInput={(e: any) => setGridSnapPoints(e?.target?.value ?? 50)}
+                                        value={gridSnapPoints()}
+                                        type="number"
+                                    />
+                                </FormControl>
+                            </Show>
 
                             <Show when={useCustomBackgroundImage() == false}>
                                 <FormControl mt="0.5em" mb="0.5em">

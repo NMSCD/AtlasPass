@@ -1,11 +1,13 @@
 import { Box, Button, createDisclosure, Flex, FormControl, FormLabel, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Select, SelectContent, SelectIcon, SelectListbox, SelectOption, SelectOptionIndicator, SelectOptionText, SelectPlaceholder, SelectTrigger, SelectValue, Spacer } from '@hope-ui/solid';
 import { Component, createMemo, createSignal, For, JSX } from 'solid-js';
-import { builtInFonts } from '../../constants/fonts';
+import { builtInFonts, textAlignOptions } from '../../constants/fonts';
 import { IPassDraggableFunctions, IPassDraggableProps, IPassDraggableState, PassDraggable } from './passDraggable';
 
 interface IPassTextProps {
     initX?: number;
     initY?: number;
+    enableGridSnap: boolean;
+    gridSnapPoints: number;
     onDelete: () => void;
 }
 
@@ -17,6 +19,7 @@ export const PassText: Component<IPassTextProps> = (props: IPassTextProps) => {
     const [fontSize, setFontSize] = createSignal(20);
     const [fontColour, setFontColour] = createSignal('#FFFFFF');
     const [fontRotation, setFontRotation] = createSignal(0);
+    const [fontAlign, setFontAlign] = createSignal(textAlignOptions[0].value);
 
     const renderText = (
         draggableProps: IPassDraggableProps,
@@ -49,13 +52,14 @@ export const PassText: Component<IPassTextProps> = (props: IPassTextProps) => {
                 class="text-container noselect"
                 style={styleWidth() + styleHeight()}
             >
-                <span style={{
-                    "font-family": fontFamily(),
-                    "font-size": fontSize() + 'px',
-                    "color": fontColour(),
+                <p style={{
+                    'font-family': fontFamily(),
+                    'font-size': fontSize() + 'px',
+                    'text-align': fontAlign(),
+                    'color': fontColour(),
                 }}>
                     {displayText}
-                </span>
+                </p>
             </div>
         );
     }
@@ -123,15 +127,30 @@ export const PassText: Component<IPassTextProps> = (props: IPassTextProps) => {
                         </Flex>
                         <Flex>
                             <FormControl flex="6" mt="0.5em" mb="0.5em">
-                                <FormLabel for="font-rotation">Rotation</FormLabel>
-                                <Input
-                                    id="font-rotation"
-                                    onInput={(e: any) => setFontRotation((e?.target?.value ?? 0))}
-                                    value={fontRotation()}
-                                    min="0"
-                                    max="360"
-                                    type="range"
-                                />
+                                <FormLabel for="font-align">Alignment</FormLabel>
+                                <Select
+                                    id="font-align"
+                                    value={fontAlign()}
+                                    onChange={(align) => setFontAlign(align)}
+                                >
+                                    <SelectTrigger>
+                                        <SelectPlaceholder>Font Alignment</SelectPlaceholder>
+                                        <SelectValue />
+                                        <SelectIcon />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectListbox>
+                                            <For each={textAlignOptions}>
+                                                {dropDownOpt => (
+                                                    <SelectOption value={dropDownOpt.value}>
+                                                        <SelectOptionText>{dropDownOpt.name}</SelectOptionText>
+                                                        <SelectOptionIndicator />
+                                                    </SelectOption>
+                                                )}
+                                            </For>
+                                        </SelectListbox>
+                                    </SelectContent>
+                                </Select>
                             </FormControl>
                             <Box width="15px"></Box>
                             <FormControl flex="2" mt="0.5em" mb="0.5em">
@@ -144,6 +163,17 @@ export const PassText: Component<IPassTextProps> = (props: IPassTextProps) => {
                                 />
                             </FormControl>
                         </Flex>
+                        <FormControl mt="0.5em" mb="0.5em">
+                            <FormLabel for="font-rotation">Rotation</FormLabel>
+                            <Input
+                                id="font-rotation"
+                                onInput={(e: any) => setFontRotation((e?.target?.value ?? 0))}
+                                value={fontRotation()}
+                                min="0"
+                                max="360"
+                                type="range"
+                            />
+                        </FormControl>
                     </ModalBody>
                     <ModalFooter>
                         <Button onClick={onClose}>Close</Button>

@@ -4,18 +4,20 @@ import { batch, Component, createMemo, JSX, onCleanup, onMount, Show } from 'sol
 export interface IPassDraggableState {
     dragging: boolean,
     resizing: boolean,
-    startOffsetX?: number,
-    startOffsetY?: number,
     x: number,
     y: number,
     width?: number,
-    height?: number
+    height?: number,
+    startOffsetX?: number,
+    startOffsetY?: number,
 }
 
 export interface IPassDraggableProps {
     initX?: number;
     initY?: number;
     rotation?: number;
+    enableGridSnap: boolean;
+    gridSnapPoints: number;
     renderChild: (props: IPassDraggableProps, state: IPassDraggableState, functions: IPassDraggableFunctions) => JSX.Element;
     onEdit?: () => void;
     onDelete: () => void;
@@ -31,8 +33,8 @@ export const PassDraggable: Component<IPassDraggableProps> = (props: IPassDragga
     let parent: any;
     let dialog: any;
 
-    let initX: number = (props.hasOwnProperty("initX") ? props.initX : 0) ?? 0;
-    let initY: number = (props.hasOwnProperty("initY") ? props.initY : 0) ?? 0;
+    let initX: number = (props.hasOwnProperty('initX') ? props.initX : 0) ?? 0;
+    let initY: number = (props.hasOwnProperty('initY') ? props.initY : 0) ?? 0;
     const [state, setState] = createStore<IPassDraggableState>({
         dragging: false,
         resizing: false,
@@ -43,32 +45,34 @@ export const PassDraggable: Component<IPassDraggableProps> = (props: IPassDragga
     onMount(() => {
         batch(() => {
             parent = dialog.parentNode;
-            parent.addEventListener("mousemove", mouseMove, { passive: true });
-            parent.addEventListener("mouseup", mouseUp);
-            parent.addEventListener("mouseleave", mouseLeave);
-            parent.addEventListener("touchmove", touchMove, { passive: true });
-            parent.addEventListener("touchend", touchEnd);
-            parent.addEventListener("touchcancel", touchCancel);
+            parent.addEventListener('mousemove', mouseMove, { passive: true });
+            parent.addEventListener('mouseup', mouseUp);
+            parent.addEventListener('mouseleave', mouseLeave);
+            parent.addEventListener('touchmove', touchMove, { passive: true });
+            parent.addEventListener('touchend', touchEnd);
+            parent.addEventListener('touchcancel', touchCancel);
             let rect = dialog.getBoundingClientRect();
-            setState("width", rect.width);
-            setState("height", rect.height);
+            setState('width', rect.width);
+            setState('height', rect.height);
         });
     });
 
     onCleanup(() => {
-        parent.removeEventListener("mousemove", mouseMove);
-        parent.removeEventListener("mouseup", mouseUp);
-        parent.removeEventListener("mouseleave", mouseLeave);
-        parent.removeEventListener("touchmove", touchMove);
-        parent.removeEventListener("touchend", touchEnd);
-        parent.removeEventListener("touchcancel", touchCancel);
+        parent.removeEventListener('mousemove', mouseMove);
+        parent.removeEventListener('mouseup', mouseUp);
+        parent.removeEventListener('mouseleave', mouseLeave);
+        parent.removeEventListener('touchmove', touchMove);
+        parent.removeEventListener('touchend', touchEnd);
+        parent.removeEventListener('touchcancel', touchCancel);
     });
 
     const dragStart = (x: number, y: number) => {
+        const stateX = x - state.x;
+        const stateY = y - state.y;
         batch(() => {
-            setState("dragging", true);
-            setState("startOffsetX", x - state.x);
-            setState("startOffsetY", y - state.y);
+            setState('dragging', true);
+            setState('startOffsetX', stateX);//props.enableGridSnap ? (Math.floor(stateX / props.gridSnapPoints) * props.gridSnapPoints) : stateX);
+            setState('startOffsetY', stateY);//props.enableGridSnap ? (Math.floor(stateY / props.gridSnapPoints) * props.gridSnapPoints) : stateY);
         });
     }
 
@@ -76,9 +80,11 @@ export const PassDraggable: Component<IPassDraggableProps> = (props: IPassDragga
         if (!state.dragging) {
             return;
         }
+        const stateX = x - (state.startOffsetX ?? 0);
+        const stateY = y - (state.startOffsetY ?? 0);
         batch(() => {
-            setState("x", x - (state.startOffsetX ?? 0));
-            setState("y", y - (state.startOffsetY ?? 0));
+            setState('x', props.enableGridSnap ? (Math.floor(stateX / props.gridSnapPoints) * props.gridSnapPoints) : stateX);
+            setState('y', props.enableGridSnap ? (Math.floor(stateY / props.gridSnapPoints) * props.gridSnapPoints) : stateY);
         });
     }
 
@@ -87,32 +93,36 @@ export const PassDraggable: Component<IPassDraggableProps> = (props: IPassDragga
             return;
         }
         batch(() => {
-            setState("dragging", false);
-            setState("startOffsetX", undefined);
-            setState("startOffsetY", undefined);
+            setState('dragging', false);
+            setState('startOffsetX', undefined);
+            setState('startOffsetY', undefined);
         });
     }
 
     const resizeStart = (x: number, y: number) => {
+        const stateX = x - (state.x + (state.width ?? 0));
+        const stateY = y - (state.y + (state.height ?? 0));
         batch(() => {
-            setState("resizing", true);
-            setState("startOffsetX", x - (state.x + (state.width ?? 0)));
-            setState("startOffsetY", y - (state.y + (state.height ?? 0)));
+            setState('resizing', true);
+            setState('startOffsetX', props.enableGridSnap ? (Math.floor(stateX / props.gridSnapPoints) * props.gridSnapPoints) : stateX);
+            setState('startOffsetY', props.enableGridSnap ? (Math.floor(stateY / props.gridSnapPoints) * props.gridSnapPoints) : stateY);
         });
     }
 
     const resizeMove = (x: number, y: number) => {
+        const stateX = x - (state.startOffsetX ?? 0) - state.x;
+        const stateY = y - (state.startOffsetY ?? 0) - state.y;
         batch(() => {
-            setState("width", x - (state.startOffsetX ?? 0) - state.x);
-            setState("height", y - (state.startOffsetY ?? 0) - state.y);
+            setState('width', props.enableGridSnap ? (Math.floor(stateX / props.gridSnapPoints) * props.gridSnapPoints) : stateX);
+            setState('height', props.enableGridSnap ? (Math.floor(stateY / props.gridSnapPoints) * props.gridSnapPoints) : stateY);
         });
     }
 
     const resizeEnd = () => {
         batch(() => {
-            setState("resizing", false);
-            setState("startOffsetX", undefined);
-            setState("startOffsetY", undefined);
+            setState('resizing', false);
+            setState('startOffsetX', undefined);
+            setState('startOffsetY', undefined);
         });
     }
 
@@ -193,8 +203,8 @@ export const PassDraggable: Component<IPassDraggableProps> = (props: IPassDragga
         e?.preventDefault?.();
 
         batch(() => {
-            setState("dragging", false);
-            setState("resizing", false);
+            setState('dragging', false);
+            setState('resizing', false);
         });
 
         props.onEdit?.();
@@ -210,7 +220,13 @@ export const PassDraggable: Component<IPassDraggableProps> = (props: IPassDragga
             ref={dialog}
             draggable={false}
             class="user-img-holder"
-            style={"top: " + state.y + "px; left: " + state.x + "px;" + ` transform: rotate(${props.rotation ?? 0}deg)`}>
+            style={{
+                top: state.y + 'px',
+                left: state.x + 'px',
+                'min-width': (state.width ?? 0) + 'px',
+                'min-height': (state.height ?? 0) + 'px',
+                transform: `rotate(${props.rotation ?? 0}deg)`
+            }}>
             <div class="content">
                 {props.renderChild(props, state, funcs)}
                 <Show when={props.onEdit != null}>

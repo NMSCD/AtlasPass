@@ -1,3 +1,4 @@
+import { DropDownOption } from "../contracts/dropDownOption";
 import { FontOption } from "../contracts/fontOption";
 
 export const builtInFonts: Array<FontOption> = [
@@ -16,6 +17,21 @@ export const builtInFonts: Array<FontOption> = [
     {
         name: 'Expedition font',
         fontFamily: 'NMS Alphabet',
+    },
+];
+
+export const textAlignOptions: Array<DropDownOption> = [
+    {
+        name: 'Left',
+        value: 'left',
+    },
+    {
+        name: 'Center',
+        value: 'center',
+    },
+    {
+        name: 'Right',
+        value: 'right',
     },
 ];
 

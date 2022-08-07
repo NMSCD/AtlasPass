@@ -5,6 +5,8 @@ interface IPassImageProps {
     src: string;
     initX?: number;
     initY?: number;
+    enableGridSnap: boolean;
+    gridSnapPoints: number;
     onDelete: () => void;
 }
 
