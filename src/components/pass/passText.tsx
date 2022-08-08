@@ -1,25 +1,50 @@
-import { Box, Button, createDisclosure, Flex, FormControl, FormLabel, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Select, SelectContent, SelectIcon, SelectListbox, SelectOption, SelectOptionIndicator, SelectOptionText, SelectPlaceholder, SelectTrigger, SelectValue, Spacer } from '@hope-ui/solid';
+import { Box, Button, createDisclosure, Flex, FormControl, FormLabel, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Select, SelectContent, SelectIcon, SelectListbox, SelectOption, SelectOptionIndicator, SelectOptionText, SelectPlaceholder, SelectTrigger, SelectValue, Spacer, Tooltip } from '@hope-ui/solid';
 import { Component, createMemo, createSignal, For, JSX } from 'solid-js';
 import { builtInFonts, textAlignOptions } from '../../constants/fonts';
-import { IPassDraggableFunctions, IPassDraggableProps, IPassDraggableState, PassDraggable } from './passDraggable';
+import { anyObject } from '../../helper/typescriptHacks';
+import { SimpleDropDown } from '../common/dropdown';
+import { ItemIndexFormControl } from './common/itemIndexFormControl';
+import { ItemRotationFormControl } from './common/itemRotationFormControl';
+import { IPassDraggableFunctions, IPassDraggablePositionProps, IPassDraggableProps, IPassDraggableState, PassDraggable } from './passDraggable';
+
+export interface IPassTextTemplateProps extends IPassDraggablePositionProps {
+    displayText?: string;
+    fontFamily?: string;
+    fontSize?: number;
+    fontColour?: string;
+    fontRotation?: number;
+    fontAlign?: string;
+    zIndex?: number;
+}
 
 interface IPassTextProps {
-    initX?: number;
-    initY?: number;
+    isSelected: boolean;
     enableGridSnap: boolean;
     gridSnapPoints: number;
+    templateData?: IPassTextTemplateProps;
     onDelete: () => void;
 }
 
 export const PassText: Component<IPassTextProps> = (props: IPassTextProps) => {
+    const {
+        displayText: templDisplayText = 'This is some text',
+        fontFamily: templFontFamily = builtInFonts[0].fontFamily,
+        fontSize: templFontSize = 20,
+        fontColour: templFontColour = '#FFFFFF',
+        fontRotation: templFontRotation = 0,
+        fontAlign: templFontAlign = textAlignOptions[0].value,
+        zIndex: templZIndex = 1,
+    } = props.templateData ?? anyObject;
+
     const { isOpen, onOpen, onClose } = createDisclosure();
 
-    const [displayText, setDisplayText] = createSignal('This is some text');
-    const [fontFamily, setFontFamily] = createSignal(builtInFonts[0].fontFamily);
-    const [fontSize, setFontSize] = createSignal(20);
-    const [fontColour, setFontColour] = createSignal('#FFFFFF');
-    const [fontRotation, setFontRotation] = createSignal(0);
-    const [fontAlign, setFontAlign] = createSignal(textAlignOptions[0].value);
+    const [displayText, setDisplayText] = createSignal(templDisplayText);
+    const [fontFamily, setFontFamily] = createSignal(templFontFamily);
+    const [fontSize, setFontSize] = createSignal(templFontSize);
+    const [fontColour, setFontColour] = createSignal(templFontColour);
+    const [fontRotation, setFontRotation] = createSignal(templFontRotation);
+    const [fontAlign, setFontAlign] = createSignal(templFontAlign);
+    const [zIndex, setZIndex] = createSignal(templZIndex);
 
     const renderText = (
         draggableProps: IPassDraggableProps,
@@ -68,6 +93,8 @@ export const PassText: Component<IPassTextProps> = (props: IPassTextProps) => {
         <>
             <PassDraggable
                 {...props}
+                {...props.templateData}
+                zIndex={zIndex()}
                 rotation={fontRotation()}
                 renderChild={renderText}
                 onEdit={onOpen}
@@ -77,7 +104,7 @@ export const PassText: Component<IPassTextProps> = (props: IPassTextProps) => {
                 <ModalOverlay />
                 <ModalContent class="noselect">
                     <ModalCloseButton />
-                    <ModalHeader>Modal Title</ModalHeader>
+                    <ModalHeader>Text options</ModalHeader>
                     <ModalBody>
                         <FormControl mt="0.5em" mb="0.5em">
                             <FormLabel for="text-to-display">Text to display</FormLabel>
@@ -89,30 +116,13 @@ export const PassText: Component<IPassTextProps> = (props: IPassTextProps) => {
                         </FormControl>
                         <Flex>
                             <FormControl flex="6" mt="0.5em" mb="0.5em">
-                                <FormLabel for="text-font">Font</FormLabel>
-                                <Select
-                                    id="text-font"
-                                    value={fontFamily()}
-                                    onChange={(font) => setFontFamily(font)}
-                                >
-                                    <SelectTrigger>
-                                        <SelectPlaceholder>Font</SelectPlaceholder>
-                                        <SelectValue />
-                                        <SelectIcon />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectListbox>
-                                            <For each={builtInFonts}>
-                                                {item => (
-                                                    <SelectOption value={item.fontFamily}>
-                                                        <SelectOptionText>{item.name}</SelectOptionText>
-                                                        <SelectOptionIndicator />
-                                                    </SelectOption>
-                                                )}
-                                            </For>
-                                        </SelectListbox>
-                                    </SelectContent>
-                                </Select>
+                                <SimpleDropDown
+                                    label="Font"
+                                    placeholder="Font"
+                                    options={builtInFonts.map(f => ({ name: f.name, value: f.fontFamily }))}
+                                    setValue={setFontFamily}
+                                    value={fontFamily}
+                                />
                             </FormControl>
                             <Box width="15px"></Box>
                             <FormControl flex="2" mt="0.5em" mb="0.5em">
@@ -127,30 +137,13 @@ export const PassText: Component<IPassTextProps> = (props: IPassTextProps) => {
                         </Flex>
                         <Flex>
                             <FormControl flex="6" mt="0.5em" mb="0.5em">
-                                <FormLabel for="font-align">Alignment</FormLabel>
-                                <Select
-                                    id="font-align"
-                                    value={fontAlign()}
-                                    onChange={(align) => setFontAlign(align)}
-                                >
-                                    <SelectTrigger>
-                                        <SelectPlaceholder>Font Alignment</SelectPlaceholder>
-                                        <SelectValue />
-                                        <SelectIcon />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectListbox>
-                                            <For each={textAlignOptions}>
-                                                {dropDownOpt => (
-                                                    <SelectOption value={dropDownOpt.value}>
-                                                        <SelectOptionText>{dropDownOpt.name}</SelectOptionText>
-                                                        <SelectOptionIndicator />
-                                                    </SelectOption>
-                                                )}
-                                            </For>
-                                        </SelectListbox>
-                                    </SelectContent>
-                                </Select>
+                                <SimpleDropDown
+                                    label="Alignment"
+                                    placeholder="Font Alignment"
+                                    options={textAlignOptions}
+                                    setValue={setFontAlign}
+                                    value={fontAlign}
+                                />
                             </FormControl>
                             <Box width="15px"></Box>
                             <FormControl flex="2" mt="0.5em" mb="0.5em">
@@ -163,17 +156,19 @@ export const PassText: Component<IPassTextProps> = (props: IPassTextProps) => {
                                 />
                             </FormControl>
                         </Flex>
-                        <FormControl mt="0.5em" mb="0.5em">
-                            <FormLabel for="font-rotation">Rotation (deg)</FormLabel>
-                            <Input
-                                id="font-rotation"
-                                onInput={(e: any) => setFontRotation((e?.target?.value ?? 0))}
-                                value={fontRotation()}
-                                min="0"
-                                max="360"
-                                type="range"
+                        <Flex>
+                            <ItemRotationFormControl
+                                flex="6" mt="0.5em" mb="0.5em"
+                                setRotation={setFontRotation}
+                                rotation={fontRotation}
                             />
-                        </FormControl>
+                            <Box width="15px"></Box>
+                            <ItemIndexFormControl
+                                flex="2" mt="0.5em" mb="0.5em"
+                                setZIndex={setZIndex}
+                                zIndexValue={zIndex}
+                            />
+                        </Flex>
                     </ModalBody>
                     <ModalFooter>
                         <Button onClick={onClose}>Close</Button>

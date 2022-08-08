@@ -28,7 +28,7 @@ export const PredefinedImageModal: Component<IPredefinedImageModalProps> = (prop
                         <SimpleGrid minChildWidth="4em" gap="$10">
                             <For each={props.images}>
                                 {imgStr => (
-                                    <Center maxH="10em" maxW="10em">
+                                    <Center class="modal-select" maxH="10em" maxW="10em">
                                         <Image
                                             src={props.imagePath(imgStr)} alt={imgStr}
                                             class="predefined-img"

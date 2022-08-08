@@ -1,25 +1,29 @@
 import {
-    Accordion, AccordionButton, AccordionIcon, AccordionItem, AccordionPanel,
-    Box, Button, Center, Checkbox, classNames, Flex, FormControl, FormLabel, Input, Radio, RadioGroup, Select,
-    SelectContent, SelectIcon, SelectListbox, SelectOption, SelectOptionIndicator, SelectOptionText, SelectPlaceholder, SelectTrigger, SelectValue, Text, VStack
+    Accordion, AccordionButton, AccordionIcon, AccordionItem, AccordionPanel, Image,
+    Box, Button, Center, Checkbox, classNames, Flex, FormControl, FormLabel, Input, Radio, RadioGroup, Spinner, Text, VStack
 } from '@hope-ui/solid';
 import { Component, createSignal, For, onCleanup, Show } from 'solid-js';
 import { v4 as uuidv4 } from 'uuid';
+import { SimpleDropDown } from '../components/common/dropdown';
 import { Header } from '../components/common/header';
+import { LoadTemplateModal } from '../components/loadTemplateModal';
 import { PassBackground } from '../components/pass/passBackground';
 import { PassGrid } from '../components/pass/passGrid';
-import { PassImage } from '../components/pass/passImage';
-import { PassText } from '../components/pass/passText';
+import { IPassImageTemplateProps, PassImage } from '../components/pass/passImage';
+import { IPassTextTemplateProps, PassText } from '../components/pass/passText';
 import { PredefinedImageModal } from '../components/predefinedImageModal';
 import { builtInBackgrounds, imageFilter } from '../constants/background';
+import { NetworkState } from '../constants/enum/networkState';
 import { PromoteType } from '../constants/enum/promoteType';
 import { assistantAppsWatermark, assistantNMSWatermark, nmscdWatermark, predefinedImages, predefinedPath } from '../constants/images';
-import { UserUpload } from '../contracts/userUpload';
+import { IBuilderFunctions, TemplateBuilder } from '../constants/templates';
+import { UserUpload, UserUploadTypes } from '../contracts/userUpload';
 import { downloadFile, exportToPng } from '../helper/fileHelper';
 
 
 export const BuilderPage: Component = () => {
     const [isMobileAnnouncementAccepted, setMobileAnnouncementAccepted] = createSignal(false);
+    const [isTemplateState, setTemplateState] = createSignal(NetworkState.Success);
 
     const [useCustomBackgroundImage, setUseCustomBackgroundImage] = createSignal(false);
     const [isPortrait, setIsPortrait] = createSignal(false);
@@ -28,10 +32,12 @@ export const BuilderPage: Component = () => {
     const [backgroundImage, setBackgroundImage] = createSignal(builtInBackgrounds[0].imgUrl);
     const [backgroundImageOpacity, setBackgroundImageOpacity] = createSignal(70);
 
-    const [userImages, setUserImages] = createSignal<Array<UserUpload>>([]);
-    const [userTexts, setUserTexts] = createSignal<Array<UserUpload>>([]);
+    const [userImages, setUserImages] = createSignal<Array<UserUpload<IPassImageTemplateProps>>>([]);
+    const [userTexts, setUserTexts] = createSignal<Array<UserUpload<IPassTextTemplateProps>>>([]);
 
     const [promoteToShow, setPromoteToShow] = createSignal(PromoteType.none);
+
+    const [selectedElement, setSelectedElement] = createSignal(null);
 
     const [gridRefKey, setGridRefKey] = createSignal('0-0');
     let gridRef: any;
@@ -60,10 +66,11 @@ export const BuilderPage: Component = () => {
             return;
         }
 
-        const objUrls: Array<UserUpload> = [];
+        const objUrls: Array<UserUpload<IPassImageTemplateProps>> = [];
         for (const file of event.target.files) {
             objUrls.push({
                 uuid: uuidv4(),
+                type: UserUploadTypes.img,
                 data: URL.createObjectURL(file),
             });
         }
@@ -72,16 +79,17 @@ export const BuilderPage: Component = () => {
     }
 
     const onSelectPredefinedImage = (imgStr: string) => {
-        const imgObj: UserUpload = {
+        const imgObj: UserUpload<IPassImageTemplateProps> = {
             uuid: uuidv4(),
+            type: UserUploadTypes.img,
             url: imgStr,
         };
         setUserImages((prev) => [...prev, imgObj]);
     }
 
     const deleteUserImage = (uuid: string) => () => {
-        setUserImages((prev: Array<UserUpload>) => {
-            const newUserImagesArray: Array<UserUpload> = [];
+        setUserImages((prev: Array<UserUpload<IPassImageTemplateProps>>) => {
+            const newUserImagesArray: Array<UserUpload<IPassImageTemplateProps>> = [];
             for (const userImg of prev) {
                 if (userImg.uuid !== uuid) {
                     newUserImagesArray.push(userImg);
@@ -94,8 +102,9 @@ export const BuilderPage: Component = () => {
     }
 
     const addUserText = () => {
-        const newTextObj: UserUpload = {
+        const newTextObj: UserUpload<IPassTextTemplateProps> = {
             uuid: uuidv4(),
+            type: UserUploadTypes.txt,
             data: '',
         };
         setUserTexts((prev) => [...prev, newTextObj]);
@@ -105,6 +114,26 @@ export const BuilderPage: Component = () => {
         const cardElem = document.querySelector(".pass-container-img")!;
         const dataUrl = await exportToPng(cardElem);
         downloadFile(dataUrl, uuidv4().substring(0, 6) + '.png');
+    }
+
+    const setTemplate = async (template: TemplateBuilder) => {
+        const funcs: IBuilderFunctions = {
+            setTemplateState,
+            setUseCustomBackgroundImage,
+            setIsPortrait,
+            setEnableGrid,
+            setGridSnapPoints,
+            setBackgroundImage,
+            setBackgroundImageOpacity,
+            setUserImages,
+            setUserTexts,
+            setPromoteToShow,
+        };
+
+        setTemplateState(NetworkState.Loading);
+        const additionalData = await template.initial(funcs, gridRefKey());
+        await template.build(funcs, gridRefKey(), additionalData);
+        setTemplateState(NetworkState.Success);
     }
 
     onCleanup(() => {
@@ -127,7 +156,9 @@ export const BuilderPage: Component = () => {
                             <For each={userImages()}>
                                 {imgObj => (
                                     <PassImage
+                                        isSelected={imgObj.uuid == selectedElement()}
                                         src={imgObj.url ?? imgObj.data}
+                                        templateData={imgObj.templateData}
                                         enableGridSnap={enableGrid()}
                                         gridSnapPoints={gridSnapPoints()}
                                         onDelete={deleteUserImage(imgObj.uuid)}
@@ -137,9 +168,11 @@ export const BuilderPage: Component = () => {
                             <For each={userTexts()}>
                                 {textObj => (
                                     <PassText
+                                        isSelected={textObj.uuid == selectedElement()}
+                                        templateData={textObj.templateData}
                                         enableGridSnap={enableGrid()}
                                         gridSnapPoints={gridSnapPoints()}
-                                        onDelete={() => setUserTexts((prev: Array<UserUpload>) => prev.filter(t => t.uuid !== textObj.uuid))}
+                                        onDelete={() => setUserTexts((prev: Array<UserUpload<IPassTextTemplateProps>>) => prev.filter(t => t.uuid !== textObj.uuid))}
                                     />
                                 )}
                             </For>
@@ -160,11 +193,40 @@ export const BuilderPage: Component = () => {
                                 gridSnapPoints={gridSnapPoints()}
                             />
                         </Show>
+                        <Show when={isTemplateState() === NetworkState.Loading}>
+                            <Center class="center-loader">
+                                <Spinner size="xl" />
+                            </Center>
+                        </Show>
                     </Box>
                 </Center>
             </Box>
             <Box class="builder-options" backgroundColor="rgba(0, 0, 0, 0.05)">
                 <Accordion allowMultiple>
+                    <AccordionItem>
+                        <AccordionButton>
+                            <Text flex="1" textAlign="start">Templates</Text>
+                            <AccordionIcon />
+                        </AccordionButton>
+                        <AccordionPanel>
+                            {/* <FormControl mt="0.5em" mb="0.5em">
+                                <FormLabel for="addCustomImage">Add custom image</FormLabel>
+                                <Input
+                                    id="addCustomImage"
+                                    placeholder="Custom image"
+                                    onChange={onSelectUserImage}
+                                    accept={imageFilter}
+                                    type="file"
+                                />
+                            </FormControl> */}
+                            <Show when={gridRefKey() != '0-0'}>
+                                <FormControl mt="0.5em" mb="0.5em">
+                                    <LoadTemplateModal setTemplate={setTemplate} />
+                                </FormControl>
+                            </Show>
+                        </AccordionPanel>
+                    </AccordionItem>
+
                     <AccordionItem>
                         <AccordionButton>
                             <Text flex="1" textAlign="start">Background</Text>
@@ -203,30 +265,13 @@ export const BuilderPage: Component = () => {
 
                             <Show when={useCustomBackgroundImage() == false}>
                                 <FormControl mt="0.5em" mb="0.5em">
-                                    <FormLabel for="backgroundImage">Background Image</FormLabel>
-                                    <Select
-                                        id="backgroundImage"
-                                        value={backgroundImage()}
-                                        onChange={(imgUrl) => setBackgroundImage(imgUrl)}
-                                    >
-                                        <SelectTrigger>
-                                            <SelectPlaceholder>Background image</SelectPlaceholder>
-                                            <SelectValue />
-                                            <SelectIcon />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectListbox>
-                                                <For each={builtInBackgrounds}>
-                                                    {item => (
-                                                        <SelectOption value={item.imgUrl}>
-                                                            <SelectOptionText>{item.name}</SelectOptionText>
-                                                            <SelectOptionIndicator />
-                                                        </SelectOption>
-                                                    )}
-                                                </For>
-                                            </SelectListbox>
-                                        </SelectContent>
-                                    </Select>
+                                    <SimpleDropDown
+                                        label="Background Image"
+                                        placeholder="Background Image"
+                                        options={builtInBackgrounds.map(bg => ({ name: bg.name, value: bg.imgUrl }))}
+                                        setValue={setBackgroundImage}
+                                        value={backgroundImage}
+                                    />
                                 </FormControl>
                             </Show>
 
@@ -314,8 +359,44 @@ export const BuilderPage: Component = () => {
                             </FormControl>
                         </AccordionPanel>
                     </AccordionItem>
-                </Accordion>
 
+                    <Show when={[...userImages(), ...userTexts()].length > 0}>
+                        <AccordionItem>
+                            <AccordionButton>
+                                <Text flex="1" textAlign="start"><b>Advanced:</b> Elements</Text>
+                                <AccordionIcon />
+                            </AccordionButton>
+                            <AccordionPanel>
+                                <For each={[...userImages(), ...userTexts()]}>
+                                    {(useUpload: UserUpload<any>) => (
+                                        <Box mt="0.5em" mb="0.5em">
+                                            <Flex>
+                                                <Show when={useUpload.url != null} fallback={<Box width="1.5em"></Box>}>
+                                                    <Image src={useUpload.url!} width="1.5em" height="1.5em" alt={useUpload.uuid} />
+                                                </Show>
+                                                <Box flex="1">
+                                                    {useUpload.uuid}
+                                                </Box>
+                                                <Show when={useUpload.type === UserUploadTypes.img}>
+                                                    <Box width="1.5em">
+                                                        <span class="pointer" onClick={deleteUserImage(useUpload.uuid)}>🗑️</span>
+                                                    </Box>
+                                                </Show>
+                                                <Show when={useUpload.type === UserUploadTypes.txt}>
+                                                    <Box width="1.5em">
+                                                        <span class="pointer"
+                                                            onClick={() => setUserTexts((prev: Array<UserUpload<IPassTextTemplateProps>>) => prev.filter(t => t.uuid !== useUpload.uuid))}>🗑️</span>
+                                                    </Box>
+                                                </Show>
+                                            </Flex>
+                                        </Box>
+                                    )}
+                                </For>
+                            </AccordionPanel>
+                        </AccordionItem>
+                    </Show>
+
+                </Accordion>
                 <Box textAlign="center" mt="1em">
                     <Button onClick={download}>Download</Button>
                     <Show when={gridRefKey() !== '0-0'} fallback={<Text mt="1em">Calculating...</Text>}>
@@ -335,6 +416,6 @@ export const BuilderPage: Component = () => {
                     </Center>
                 </Box>
             </Show>
-        </Flex>
+        </Flex >
     );
 };

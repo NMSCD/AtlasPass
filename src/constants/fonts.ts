@@ -1,6 +1,10 @@
 import { DropDownOption } from "../contracts/dropDownOption";
 import { FontOption } from "../contracts/fontOption";
 
+export const builtInFontNMSfontFuturaProBook = 'NMSFuturaProBook';
+export const builtInFontNMSfontGeoSans = 'NMSGeoSans';
+export const builtInFontExpeditionfont = 'NMS Alphabet';
+
 export const builtInFonts: Array<FontOption> = [
     {
         name: 'Default',
@@ -8,15 +12,15 @@ export const builtInFonts: Array<FontOption> = [
     },
     {
         name: 'NMS font (FuturaProBook)',
-        fontFamily: 'NMSFuturaProBook',
+        fontFamily: builtInFontNMSfontFuturaProBook,
     },
     {
         name: 'NMS font (GeoSans)',
-        fontFamily: 'NMSGeoSans',
+        fontFamily: builtInFontNMSfontGeoSans,
     },
     {
         name: 'Expedition font',
-        fontFamily: 'NMS Alphabet',
+        fontFamily: builtInFontExpeditionfont,
     },
 ];
 

@@ -1,5 +1,6 @@
 export const baseImages = '/assets/img/';
 export const predefinedPath = baseImages + 'predefined/';
+export const templatePath = baseImages + 'template/';
 
 export const assistantNMSWatermark = baseImages + 'assistantNMSWatermark.png';
 export const nmscdWatermark = baseImages + 'nmscdWatermark.png';

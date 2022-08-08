@@ -1,5 +1,6 @@
 import { createStore } from 'solid-js/store';
 import { batch, Component, createMemo, JSX, onCleanup, onMount, Show } from 'solid-js';
+import classNames from 'classnames';
 
 export interface IPassDraggableState {
     dragging: boolean,
@@ -12,12 +13,19 @@ export interface IPassDraggableState {
     startOffsetY?: number,
 }
 
-export interface IPassDraggableProps {
+export interface IPassDraggablePositionProps {
     initX?: number;
     initY?: number;
+    initWidth?: number,
+    initHeight?: number,
+}
+
+export interface IPassDraggableProps extends IPassDraggablePositionProps {
+    isSelected?: boolean;
     rotation?: number;
     enableGridSnap: boolean;
     gridSnapPoints: number;
+    zIndex?: number;
     renderChild: (props: IPassDraggableProps, state: IPassDraggableState, functions: IPassDraggableFunctions) => JSX.Element;
     onEdit?: () => void;
     onDelete: () => void;
@@ -39,8 +47,12 @@ export const PassDraggable: Component<IPassDraggableProps> = (props: IPassDragga
         dragging: false,
         resizing: false,
         x: initX,
-        y: initY
+        y: initY,
+        width: props.initWidth,
+        height: props.initHeight,
     });
+
+    console.log('state', { ...state });
 
     onMount(() => {
         batch(() => {
@@ -219,10 +231,11 @@ export const PassDraggable: Component<IPassDraggableProps> = (props: IPassDragga
         <div
             ref={dialog}
             draggable={false}
-            class="user-img-holder"
+            class={classNames('user-img-holder', { 'is-selected': props.isSelected })}
             style={{
                 top: state.y + 'px',
                 left: state.x + 'px',
+                'z-index': props.zIndex ?? 1,
                 'min-width': (state.width ?? 0) + 'px',
                 'min-height': (state.height ?? 0) + 'px',
                 transform: `rotate(${props.rotation ?? 0}deg)`
