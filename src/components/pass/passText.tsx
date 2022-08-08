@@ -1,11 +1,12 @@
-import { Box, Button, createDisclosure, Flex, FormControl, FormLabel, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Select, SelectContent, SelectIcon, SelectListbox, SelectOption, SelectOptionIndicator, SelectOptionText, SelectPlaceholder, SelectTrigger, SelectValue, Spacer, Tooltip } from '@hope-ui/solid';
-import { Component, createMemo, createSignal, For, JSX } from 'solid-js';
+import { Box, Button, createDisclosure, Flex, FormControl, FormLabel, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay } from '@hope-ui/solid';
+import { Component, createMemo, createSignal, JSX } from 'solid-js';
 import { builtInFonts, textAlignOptions } from '../../constants/fonts';
+import { UserUploadTypes } from '../../contracts/userUpload';
 import { anyObject } from '../../helper/typescriptHacks';
 import { SimpleDropDown } from '../common/dropdown';
 import { ItemIndexFormControl } from './common/itemIndexFormControl';
 import { ItemRotationFormControl } from './common/itemRotationFormControl';
-import { IPassDraggableFunctions, IPassDraggablePositionProps, IPassDraggableProps, IPassDraggableState, PassDraggable } from './passDraggable';
+import { IPassDraggableFunctions, IPassDraggablePositionProps, IPassDraggableProps, IPassDraggableState, IPassDraggableTemplateProps, PassDraggable } from './passDraggable';
 
 export interface IPassTextTemplateProps extends IPassDraggablePositionProps {
     displayText?: string;
@@ -18,6 +19,8 @@ export interface IPassTextTemplateProps extends IPassDraggablePositionProps {
 }
 
 interface IPassTextProps {
+    uuid: string;
+    name?: string;
     isSelected: boolean;
     enableGridSnap: boolean;
     gridSnapPoints: number;
@@ -42,7 +45,7 @@ export const PassText: Component<IPassTextProps> = (props: IPassTextProps) => {
     const [fontFamily, setFontFamily] = createSignal(templFontFamily);
     const [fontSize, setFontSize] = createSignal(templFontSize);
     const [fontColour, setFontColour] = createSignal(templFontColour);
-    const [fontRotation, setFontRotation] = createSignal(templFontRotation);
+    const [rotation, setFontRotation] = createSignal(templFontRotation);
     const [fontAlign, setFontAlign] = createSignal(templFontAlign);
     const [zIndex, setZIndex] = createSignal(templZIndex);
 
@@ -94,8 +97,20 @@ export const PassText: Component<IPassTextProps> = (props: IPassTextProps) => {
             <PassDraggable
                 {...props}
                 {...props.templateData}
-                zIndex={zIndex()}
-                rotation={fontRotation()}
+                partialTemplateData={{
+                    uuid: props.uuid,
+                    name: props.name,
+                    type: UserUploadTypes.img,
+                    templateData: {
+                        displayText: displayText(),
+                        fontFamily: fontFamily(),
+                        fontSize: fontSize(),
+                        fontColour: fontColour(),
+                        fontAlign: fontAlign(),
+                        rotation: rotation(),
+                        zIndex: zIndex(),
+                    }
+                }}
                 renderChild={renderText}
                 onEdit={onOpen}
             />
@@ -160,7 +175,7 @@ export const PassText: Component<IPassTextProps> = (props: IPassTextProps) => {
                             <ItemRotationFormControl
                                 flex="6" mt="0.5em" mb="0.5em"
                                 setRotation={setFontRotation}
-                                rotation={fontRotation}
+                                rotation={rotation}
                             />
                             <Box width="15px"></Box>
                             <ItemIndexFormControl

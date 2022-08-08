@@ -27,14 +27,10 @@
         }
     }
 
-    .pass-container-img {
-        max-height: 80vh;
-    }
-
-    .user-img-holder {
+    .user-drag-holder {
         display: flex;
         flex-direction: row;
-        overflow: none;
+        // overflow: none;
         position: absolute;
 
         .content {
@@ -156,9 +152,15 @@
 
 .modal-select {
     cursor: pointer;
-    transition: all 150ms ease-in-out;
+    img {
+        transition: all 150ms ease-in-out;
+    }
 
-    &:hover {
+    &:hover img {
         transform: scale(1.25);
+    }
+
+    &.small-hover:hover img {
+        transform: scale(1.125);
     }
 }

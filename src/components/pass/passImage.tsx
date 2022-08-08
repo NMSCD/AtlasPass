@@ -1,9 +1,10 @@
 import { Box, Button, createDisclosure, Flex, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay } from '@hope-ui/solid';
 import { Component, createMemo, createSignal, JSX } from 'solid-js';
+import { UserUploadTypes } from '../../contracts/userUpload';
 import { anyObject } from '../../helper/typescriptHacks';
 import { ItemIndexFormControl } from './common/itemIndexFormControl';
 import { ItemRotationFormControl } from './common/itemRotationFormControl';
-import { IPassDraggableFunctions, IPassDraggablePositionProps, IPassDraggableProps, IPassDraggableState, PassDraggable } from './passDraggable';
+import { IPassDraggableFunctions, IPassDraggablePositionProps, IPassDraggableProps, IPassDraggableState, IPassDraggableTemplateProps, PassDraggable } from './passDraggable';
 
 export interface IPassImageTemplateProps extends IPassDraggablePositionProps {
     rotation?: number;
@@ -12,6 +13,8 @@ export interface IPassImageTemplateProps extends IPassDraggablePositionProps {
 
 interface IPassImageProps {
     src: string;
+    uuid: string;
+    name?: string;
     isSelected: boolean;
     enableGridSnap: boolean;
     gridSnapPoints: number;
@@ -68,16 +71,21 @@ export const PassImage: Component<IPassImageProps> = (props: IPassImageProps) =>
         );
     }
 
-    console.log('props', { ...props });
-    console.log('templateData', { ...props.templateData });
-
     return (
         <>
             <PassDraggable
                 {...props}
                 {...props.templateData}
-                zIndex={zIndex()}
-                rotation={rotation()}
+                partialTemplateData={{
+                    uuid: props.uuid,
+                    name: props.name,
+                    type: UserUploadTypes.img,
+                    url: props.src,
+                    templateData: {
+                        rotation: rotation(),
+                        zIndex: zIndex(),
+                    }
+                }}
                 renderChild={renderImage}
                 onEdit={onOpen}
             />

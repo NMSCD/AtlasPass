@@ -1,6 +1,6 @@
 import {
     Accordion, AccordionButton, AccordionIcon, AccordionItem, AccordionPanel, Image,
-    Box, Button, Center, Checkbox, classNames, Flex, FormControl, FormLabel, Input, Radio, RadioGroup, Spinner, Text, VStack
+    Box, Button, Center, Checkbox, classNames, Flex, FormControl, FormLabel, Input, Radio, RadioGroup, Spinner, Text, VStack, notificationService
 } from '@hope-ui/solid';
 import { Component, createSignal, For, onCleanup, Show } from 'solid-js';
 import { v4 as uuidv4 } from 'uuid';
@@ -16,10 +16,12 @@ import { builtInBackgrounds, imageFilter } from '../constants/background';
 import { NetworkState } from '../constants/enum/networkState';
 import { PromoteType } from '../constants/enum/promoteType';
 import { assistantAppsWatermark, assistantNMSWatermark, nmscdWatermark, predefinedImages, predefinedPath } from '../constants/images';
-import { IBuilderFunctions, TemplateBuilder } from '../constants/templates';
+import { customTemplate, IBuilderFunctions, TemplateBuilder } from '../constants/templates';
+import { ExportTemplate } from '../contracts/exportTemplate';
 import { UserUpload, UserUploadTypes } from '../contracts/userUpload';
-import { downloadFile, exportToPng } from '../helper/fileHelper';
-
+import { getAllElementsTemplateData, getElementTemplateData } from '../helper/documentHelper';
+import { downloadFile, downloadJsonAsFile, exportToPng } from '../helper/fileHelper';
+import { stringInputPopup } from '../helper/popupHelper';
 
 export const BuilderPage: Component = () => {
     const [isMobileAnnouncementAccepted, setMobileAnnouncementAccepted] = createSignal(false);
@@ -105,12 +107,11 @@ export const BuilderPage: Component = () => {
         const newTextObj: UserUpload<IPassTextTemplateProps> = {
             uuid: uuidv4(),
             type: UserUploadTypes.txt,
-            data: '',
         };
         setUserTexts((prev) => [...prev, newTextObj]);
     }
 
-    const download = async () => {
+    const downloadPng = async () => {
         const cardElem = document.querySelector(".pass-container-img")!;
         const dataUrl = await exportToPng(cardElem);
         downloadFile(dataUrl, uuidv4().substring(0, 6) + '.png');
@@ -131,9 +132,76 @@ export const BuilderPage: Component = () => {
         };
 
         setTemplateState(NetworkState.Loading);
-        const additionalData = await template.initial(funcs, gridRefKey());
-        await template.build(funcs, gridRefKey(), additionalData);
+        try {
+            setUserImages([]);
+            setUserTexts([]);
+            const additionalData = await template.initial(funcs, gridRefKey());
+            await template.build(funcs, gridRefKey(), additionalData);
+        } catch (ex) {
+            console.error(ex);
+        }
         setTemplateState(NetworkState.Success);
+    }
+
+    const triggerEdit = (uuid: string) => () => {
+        const editOnSpecificItem: any = document.querySelector('#id' + uuid + ' .edit-handle');
+        editOnSpecificItem?.click?.();
+    }
+
+    const editElementName = (uuid: string, type: string, currentName: string) => async () => {
+
+        const newName = await stringInputPopup({
+            title: 'Enter a new name',
+            input: 'text',
+            inputValue: currentName,
+            focusOnInput: true,
+        });
+        if (newName == null || newName.length < 1) return;
+
+        const editIfNeeded = (prevItem: UserUpload<any>) => {
+            if (prevItem.uuid != uuid) return prevItem;
+
+            let fetchedTemplateData = { ...prevItem.templateData };
+            try {
+                const jsonData = getElementTemplateData(uuid);
+                fetchedTemplateData = jsonData.templateData;
+            } catch (ex) {
+                console.error(ex);
+            }
+            return { ...prevItem, name: newName, templateData: fetchedTemplateData };
+        };
+
+        if (type === UserUploadTypes.img) {
+            setUserImages((prev) => prev.map(editIfNeeded));
+        }
+        if (type === UserUploadTypes.txt) {
+            setUserTexts((prev) => prev.map(editIfNeeded));
+        }
+    }
+
+    const exportAsTemplate = async () => {
+        const allJsonItems = getAllElementsTemplateData();
+        const gridRefData = gridRefKey().split('-') as any;
+
+        const allData: ExportTemplate = {
+            useCustomBackgroundImage: useCustomBackgroundImage(),
+            isPortrait: isPortrait(),
+            enableGrid: enableGrid(),
+            gridSnapPoints: gridSnapPoints(),
+            backgroundImage: backgroundImage(),
+            backgroundImageOpacity: backgroundImageOpacity(),
+            promoteToShow: promoteToShow().toString(),
+            width: gridRefData[0],
+            height: gridRefData[1],
+            userImages: userImages()
+                .map(usrI => allJsonItems.find(jsn => jsn.uuid === usrI.uuid)!)
+                .filter(usrI => usrI != null),
+            userTexts: userTexts()
+                .map(usrT => allJsonItems.find(jsn => jsn.uuid === usrT.uuid)!)
+                .filter(usrT => usrT != null),
+        }
+
+        downloadJsonAsFile(allData, uuidv4().substring(0, 6) + '.json');
     }
 
     onCleanup(() => {
@@ -144,7 +212,7 @@ export const BuilderPage: Component = () => {
     });
 
     return (
-        <Flex minH="calc(100vh - 80px)" class="builder noselect">
+        <Flex class="builder noselect">
             <Box class="builder-preview" overflow="hidden">
                 <Center flexDirection="column" onDragOver={(ev: any) => ev?.preventDefault?.()}>
                     <Box ref={gridRef} class={classNames('pass-container', isPortrait() ? 'is-portrait' : '')}>
@@ -156,6 +224,8 @@ export const BuilderPage: Component = () => {
                             <For each={userImages()}>
                                 {imgObj => (
                                     <PassImage
+                                        uuid={imgObj.uuid}
+                                        name={imgObj.name}
                                         isSelected={imgObj.uuid == selectedElement()}
                                         src={imgObj.url ?? imgObj.data}
                                         templateData={imgObj.templateData}
@@ -168,6 +238,8 @@ export const BuilderPage: Component = () => {
                             <For each={userTexts()}>
                                 {textObj => (
                                     <PassText
+                                        uuid={textObj.uuid}
+                                        name={textObj.name}
                                         isSelected={textObj.uuid == selectedElement()}
                                         templateData={textObj.templateData}
                                         enableGridSnap={enableGrid()}
@@ -209,19 +281,12 @@ export const BuilderPage: Component = () => {
                             <AccordionIcon />
                         </AccordionButton>
                         <AccordionPanel>
-                            {/* <FormControl mt="0.5em" mb="0.5em">
-                                <FormLabel for="addCustomImage">Add custom image</FormLabel>
-                                <Input
-                                    id="addCustomImage"
-                                    placeholder="Custom image"
-                                    onChange={onSelectUserImage}
-                                    accept={imageFilter}
-                                    type="file"
-                                />
-                            </FormControl> */}
                             <Show when={gridRefKey() != '0-0'}>
                                 <FormControl mt="0.5em" mb="0.5em">
                                     <LoadTemplateModal setTemplate={setTemplate} />
+                                </FormControl>
+                                <FormControl mt="0.5em" mb="0.5em">
+                                    <Button colorScheme="warning" variant="outline" onClick={() => setTemplate(customTemplate)}>Tenplate from JSON (experimental)</Button>
                                 </FormControl>
                             </Show>
                         </AccordionPanel>
@@ -348,7 +413,7 @@ export const BuilderPage: Component = () => {
                         </AccordionButton>
                         <AccordionPanel>
                             <FormControl mt="0.5em" mb="0.5em">
-                                <RadioGroup defaultValue={promoteToShow()} onChange={(type: any) => setPromoteToShow(type)}>
+                                <RadioGroup value={promoteToShow()} onChange={(type: any) => setPromoteToShow(type)}>
                                     <VStack spacing="$2" alignItems="left">
                                         <Radio value={PromoteType.none}>None</Radio>
                                         <Radio value={PromoteType.nmscd}>Promote <span class="highlight-secondary">NMSCD</span></Radio>
@@ -371,19 +436,23 @@ export const BuilderPage: Component = () => {
                                     {(useUpload: UserUpload<any>) => (
                                         <Box mt="0.5em" mb="0.5em">
                                             <Flex>
-                                                <Show when={useUpload.url != null} fallback={<Box width="1.5em"></Box>}>
-                                                    <Image src={useUpload.url!} width="1.5em" height="1.5em" alt={useUpload.uuid} />
+                                                <Show when={useUpload.url != null || useUpload.data != null} fallback={<Box width="1.5em">✏️</Box>}>
+                                                    <Image src={(useUpload.url ?? useUpload.data)!} width="1.5em" height="1.5em" alt={useUpload.uuid} />
                                                 </Show>
-                                                <Box flex="1">
-                                                    {useUpload.uuid}
+                                                <Box flex="1" class="max-lines-1 pointer" pl="0.5em" onClick={editElementName(useUpload.uuid, useUpload.type, useUpload.name)}>
+                                                    {useUpload.name ?? useUpload.uuid}
                                                 </Box>
                                                 <Show when={useUpload.type === UserUploadTypes.img}>
-                                                    <Box width="1.5em">
+                                                    <Box width="3em">
+                                                        <span class="pointer" onClick={triggerEdit(useUpload.uuid)}>📝</span>
+                                                        &nbsp;
                                                         <span class="pointer" onClick={deleteUserImage(useUpload.uuid)}>🗑️</span>
                                                     </Box>
                                                 </Show>
                                                 <Show when={useUpload.type === UserUploadTypes.txt}>
-                                                    <Box width="1.5em">
+                                                    <Box width="3em">
+                                                        <span class="pointer" onClick={triggerEdit(useUpload.uuid)}>📝</span>
+                                                        &nbsp;
                                                         <span class="pointer"
                                                             onClick={() => setUserTexts((prev: Array<UserUpload<IPassTextTemplateProps>>) => prev.filter(t => t.uuid !== useUpload.uuid))}>🗑️</span>
                                                     </Box>
@@ -392,13 +461,16 @@ export const BuilderPage: Component = () => {
                                         </Box>
                                     )}
                                 </For>
+                                <Box textAlign="center" mt="1em" mb="0.5em">
+                                    <Button colorScheme="warning" width="$full" onClick={exportAsTemplate}>Export as template (experimental)</Button>
+                                </Box>
                             </AccordionPanel>
                         </AccordionItem>
                     </Show>
 
                 </Accordion>
-                <Box textAlign="center" mt="1em">
-                    <Button onClick={download}>Download</Button>
+                <Box textAlign="center" m="1em">
+                    <Button width="$full" mt="0.5em" onClick={downloadPng}>Download</Button>
                     <Show when={gridRefKey() !== '0-0'} fallback={<Text mt="1em">Calculating...</Text>}>
                         <Text mt="1em">Export resolution: <b>{gridRefKey().split('-')[0]}px</b> by <b>{gridRefKey().split('-')[1]}px</b></Text>
                     </Show>

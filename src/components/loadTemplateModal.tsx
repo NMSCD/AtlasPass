@@ -17,7 +17,7 @@ export const LoadTemplateModal: Component<ILoadTemplateModalProps> = (props: ILo
     return (
         <>
             <Button variant="outline" onClick={onOpen}>Add from selection</Button>
-            <Modal size="full" opened={isOpen()} onClose={onClose}>
+            <Modal size="xl" opened={isOpen()} onClose={onClose}>
                 <ModalOverlay />
                 <ModalContent>
                     <ModalCloseButton />
@@ -26,7 +26,7 @@ export const LoadTemplateModal: Component<ILoadTemplateModalProps> = (props: ILo
                         <Flex gap="$10" justifyContent="center">
                             <For each={allTemplates}>
                                 {template => (
-                                    <Center class="modal-select" maxH="10em" maxW="10em" flexDirection="column">
+                                    <Center class="modal-select small-hover" maxH="10em" maxW="10em" flexDirection="column">
                                         <Image
                                             p="1em"
                                             src={template.imgUrl}

@@ -20,12 +20,20 @@ export interface IPassDraggablePositionProps {
     initHeight?: number,
 }
 
+export interface IPassDraggableTemplateProps {
+    uuid: string;
+    type: string;
+    name?: string;
+    url?: string;
+    templateData: any;
+}
+
 export interface IPassDraggableProps extends IPassDraggablePositionProps {
+    partialTemplateData: IPassDraggableTemplateProps;
+    //
     isSelected?: boolean;
-    rotation?: number;
     enableGridSnap: boolean;
     gridSnapPoints: number;
-    zIndex?: number;
     renderChild: (props: IPassDraggableProps, state: IPassDraggableState, functions: IPassDraggableFunctions) => JSX.Element;
     onEdit?: () => void;
     onDelete: () => void;
@@ -227,18 +235,30 @@ export const PassDraggable: Component<IPassDraggableProps> = (props: IPassDragga
         touchStart,
     }
 
+    console.log(props.partialTemplateData?.templateData)
     return (
         <div
+            id={props.partialTemplateData.uuid != null ? 'id' + props.partialTemplateData.uuid : undefined}
             ref={dialog}
             draggable={false}
-            class={classNames('user-img-holder', { 'is-selected': props.isSelected })}
+            data-template={btoa(JSON.stringify({
+                ...props.partialTemplateData,
+                templateData: {
+                    ...props.partialTemplateData.templateData,
+                    initHeight: state.height,
+                    initWidth: state.width,
+                    initX: state.x,
+                    initY: state.y,
+                }
+            }))}
+            class={classNames('user-drag-holder', 'template-data', { 'is-selected': props.isSelected })}
             style={{
                 top: state.y + 'px',
                 left: state.x + 'px',
-                'z-index': props.zIndex ?? 1,
+                'z-index': props.partialTemplateData?.templateData?.zIndex ?? 1,
                 'min-width': (state.width ?? 0) + 'px',
                 'min-height': (state.height ?? 0) + 'px',
-                transform: `rotate(${props.rotation ?? 0}deg)`
+                transform: `rotate(${props.partialTemplateData?.templateData?.rotation ?? 0}deg)`
             }}>
             <div class="content">
                 {props.renderChild(props, state, funcs)}

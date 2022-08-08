@@ -1,14 +1,14 @@
+import { v4 as uuidv4 } from 'uuid';
 import { IPassImageTemplateProps } from '../components/pass/passImage';
 import { IPassTextTemplateProps } from '../components/pass/passText';
 import { PromoteType } from '../constants/enum/promoteType';
 import { UserUpload, UserUploadTypes } from '../contracts/userUpload';
-import { templatePath } from './images';
-import { v4 as uuidv4 } from 'uuid';
-import { NetworkState } from './enum/networkState';
 import { timeout } from '../helper/asyncHelper';
-import { builtInFontExpeditionfont, builtInFontNMSfontGeoSans } from './fonts';
+import { stringInputPopup } from '../helper/popupHelper';
 import { backgroundHexagon1 } from './background';
-import Swal from 'sweetalert2';
+import { NetworkState } from './enum/networkState';
+import { builtInFontExpeditionfont, builtInFontNMSfontGeoSans } from './fonts';
+import { templatePath } from './images';
 
 export interface IBuilderFunctions {
     setTemplateState: (newState: NetworkState) => void;
@@ -30,29 +30,84 @@ export interface TemplateBuilder {
     build: (funcs: IBuilderFunctions, gridRefKey: string, additionalData: any) => Promise<void>;
 }
 
-export const nmscd: TemplateBuilder = {
-    name: 'NMSCD pass',
+export const customTemplate: TemplateBuilder = {
+    name: 'Use Custom template (experimental)',
     imgUrl: templatePath + 'nmscd.png',
     initial: async (func: IBuilderFunctions, gridRefKey: string): Promise<any> => {
-        const minimumWaitPromise = timeout(2000);
-        func.setIsPortrait(true);
-        func.setUseCustomBackgroundImage(true);
-        func.setBackgroundImage(backgroundHexagon1);
 
-        const { value: username } = await Swal.fire({
+        const templateJson = await stringInputPopup({
+            title: 'Paste template JSON',
+            input: 'textarea',
+            focusOnInput: true,
+        });
+        const templObj = JSON.parse(templateJson);
+        const minimumWaitPromise = timeout(2000);
+
+        func.setIsPortrait(true);
+        func.setUseCustomBackgroundImage(templObj.useCustomBackgroundImage);
+        func.setBackgroundImageOpacity(templObj.backgroundImageOpacity);
+        func.setBackgroundImage(templObj.backgroundImage);
+        func.setEnableGrid(templObj.enableGrid);
+        func.setGridSnapPoints(templObj.gridSnapPoints);
+        func.setPromoteToShow(templObj.promoteToShow);
+
+        await minimumWaitPromise;
+
+        return templObj;
+    },
+    build: async (func: IBuilderFunctions, gridRefKey: string, additionalData: any) => {
+        const gridRefDataArr = gridRefKey.split('-') as Array<any>;
+        const imageWidth = gridRefDataArr[0];
+        const imageHeight = gridRefDataArr[1];
+
+        const images = additionalData.userImages.map((ui: any) => (
+            {
+                uuid: uuidv4(),
+                type: ui.type,
+                name: ui.name,
+                url: ui.url,
+                templateData: { ...ui.templateData }
+            }
+        ));
+        func.setUserImages(images);
+
+        const texts = additionalData.userTexts.map((ui: any) => (
+            {
+                uuid: uuidv4(),
+                type: ui.type,
+                name: ui.name,
+                templateData: { ...ui.templateData }
+            }
+        ));
+        func.setUserTexts(texts);
+    }
+}
+
+export const nmscdTemplate: TemplateBuilder = {
+    name: 'NMSCD pass',
+    imgUrl: 'https://avatars.githubusercontent.com/t/5776046?s=280&v=4',
+    initial: async (func: IBuilderFunctions, gridRefKey: string): Promise<any> => {
+        func.setIsPortrait(true);
+        const minimumWaitPromise = timeout(3000);
+
+        func.setUseCustomBackgroundImage(false);
+        func.setEnableGrid(false);
+        func.setBackgroundImage(backgroundHexagon1);
+        func.setPromoteToShow(PromoteType.nmscd);
+
+        const username = await stringInputPopup({
             title: 'Enter your Username',
             input: 'text',
-            showCancelButton: true,
+            focusOnInput: true,
         });
-        const { value: friendcode } = await Swal.fire({
+
+        const friendcode = await stringInputPopup({
             title: 'Enter your Friend Code',
             input: 'text',
-            showCancelButton: true,
         });
-        const { value: role } = await Swal.fire({
+        const role = await stringInputPopup({
             title: 'Enter your Role',
             input: 'text',
-            showCancelButton: true,
         });
 
         await minimumWaitPromise;
@@ -73,6 +128,7 @@ export const nmscd: TemplateBuilder = {
             {
                 uuid: uuidv4(),
                 type: UserUploadTypes.img,
+                name: 'HGRET Logo',
                 url: 'https://avatars.githubusercontent.com/t/5776046?s=280&v=4',
                 templateData: {
                     initHeight: 300,
@@ -87,6 +143,7 @@ export const nmscd: TemplateBuilder = {
             {
                 uuid: uuidv4(),
                 type: UserUploadTypes.txt,
+                name: 'Username',
                 templateData: {
                     displayText: username,
                     fontAlign: 'center',
@@ -101,6 +158,7 @@ export const nmscd: TemplateBuilder = {
             {
                 uuid: uuidv4(),
                 type: UserUploadTypes.txt,
+                name: 'FriendCode',
                 templateData: {
                     displayText: friendcode,
                     fontAlign: 'center',
@@ -115,6 +173,7 @@ export const nmscd: TemplateBuilder = {
             {
                 uuid: uuidv4(),
                 type: UserUploadTypes.txt,
+                name: 'Role',
                 templateData: {
                     displayText: role,
                     fontAlign: 'center',
@@ -128,10 +187,9 @@ export const nmscd: TemplateBuilder = {
                 }
             }
         ]);
-        func.setPromoteToShow(PromoteType.nmscd);
     }
 }
 
 export const allTemplates: Array<TemplateBuilder> = [
-    nmscd,
+    nmscdTemplate,
 ];

@@ -9,6 +9,11 @@ export const downloadFile = (dataUrl: any, filename: string) => {
     link.remove();
 }
 
+export const downloadJsonAsFile = (data: any, filename: string) => {
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data));
+    downloadFile(dataStr, filename);
+}
+
 
 export const exportToPng = async (cardElem: any): Promise<string> => {
     const dataUrl = await domtoimage.toPng(cardElem);

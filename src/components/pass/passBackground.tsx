@@ -14,8 +14,10 @@ export const PassBackground: Component<PassBackgroundProps> = (props: PassBackgr
         >
             <Image
                 class="pass-bg-img"
-                opacity={props.backgroundImageOpacity ?? 1}
                 src={props.backgroundImage}
+                style={{
+                    'opacity': props.backgroundImageOpacity ?? 1
+                }}
             />
         </Box>
     );

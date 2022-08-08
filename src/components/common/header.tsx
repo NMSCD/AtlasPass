@@ -14,6 +14,7 @@ export const Header: Component = () => {
             pb="5px"
             class="header"
             backgroundColor="rgba(255,255,255,0.1)"
+            zIndex={100}
         >
             <Flex>
                 <Center pl="1em" className="noselect">
