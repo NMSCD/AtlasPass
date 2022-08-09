@@ -8,6 +8,7 @@ export const backgroundSphynx2 = backgroundsFolder + 'sphynx2.png';
 export const backgroundSphynx3 = backgroundsFolder + 'sphynx3.png';
 export const backgroundHexagon1 = backgroundsFolder + 'hexagon1.png';
 export const backgroundAtlasPass1 = backgroundsFolder + 'atlasPass1.png';
+export const backgroundAtlasPass2 = backgroundsFolder + 'atlasPass2.png';
 
 export const builtInBackgrounds: Array<BackgroundOption> = [
     {
@@ -33,6 +34,10 @@ export const builtInBackgrounds: Array<BackgroundOption> = [
     {
         name: 'Hexagon1',
         imgUrl: backgroundHexagon1,
+    },
+    {
+        name: 'Atlas Pass Vector (Sphynxcolt)',
+        imgUrl: backgroundAtlasPass2,
     },
     {
         name: 'Atlas Pass Level 4',
