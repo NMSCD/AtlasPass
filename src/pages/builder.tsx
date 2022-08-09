@@ -1,6 +1,6 @@
 import {
     Accordion, AccordionButton, AccordionIcon, AccordionItem, AccordionPanel, Image,
-    Box, Button, Center, Checkbox, classNames, Flex, FormControl, FormLabel, Input, Radio, RadioGroup, Spinner, Text, VStack, notificationService
+    Box, Button, Center, Checkbox, classNames, Flex, FormControl, FormLabel, Input, Radio, RadioGroup, Spinner, Text, VStack, notificationService, Tooltip
 } from '@hope-ui/solid';
 import { Component, createSignal, For, onCleanup, Show } from 'solid-js';
 import { v4 as uuidv4 } from 'uuid';
@@ -143,9 +143,35 @@ export const BuilderPage: Component = () => {
         setTemplateState(NetworkState.Success);
     }
 
+    const duplicateItem = (uuid: string, type: string) => () => {
+        if (type === UserUploadTypes.img) {
+            setUserImages(prev => prev.flatMap(img =>
+                (img.uuid === uuid) //
+                    ? [img, { ...img, uuid: uuidv4().toString() }]
+                    : [img])
+            );
+        }
+        if (type === UserUploadTypes.txt) {
+            setUserTexts(prev => prev.flatMap(img =>
+                (img.uuid === uuid) //
+                    ? [img, { ...img, uuid: uuidv4().toString() }]
+                    : [img])
+            );
+        }
+    }
+
     const triggerEdit = (uuid: string) => () => {
         const editOnSpecificItem: any = document.querySelector('#id' + uuid + ' .edit-handle');
         editOnSpecificItem?.click?.();
+    }
+
+    const deleteItem = (uuid: string, type: string) => () => {
+        if (type === UserUploadTypes.img) {
+            deleteUserImage(uuid);
+        }
+        if (type === UserUploadTypes.txt) {
+            setUserTexts(prev => prev.filter(t => t.uuid !== uuid));
+        }
     }
 
     const editElementName = (uuid: string, type: string, currentName: string) => async () => {
@@ -158,7 +184,7 @@ export const BuilderPage: Component = () => {
         });
         if (newName == null || newName.length < 1) return;
 
-        const editIfNeeded = (prevItem: UserUpload<any>) => {
+        const editIfNeeded = (prevItem: UserUpload<any>, uuid: string, localNewName: string) => {
             if (prevItem.uuid != uuid) return prevItem;
 
             let fetchedTemplateData = { ...prevItem.templateData };
@@ -168,14 +194,14 @@ export const BuilderPage: Component = () => {
             } catch (ex) {
                 console.error(ex);
             }
-            return { ...prevItem, name: newName, templateData: fetchedTemplateData };
+            return { ...prevItem, name: localNewName, templateData: fetchedTemplateData };
         };
 
         if (type === UserUploadTypes.img) {
-            setUserImages((prev) => prev.map(editIfNeeded));
+            setUserImages((prev) => prev.map(i => editIfNeeded(i, uuid, newName)));
         }
         if (type === UserUploadTypes.txt) {
-            setUserTexts((prev) => prev.map(editIfNeeded));
+            setUserTexts((prev) => prev.map(i => editIfNeeded(i, uuid, newName)));
         }
     }
 
@@ -433,30 +459,24 @@ export const BuilderPage: Component = () => {
                             </AccordionButton>
                             <AccordionPanel>
                                 <For each={[...userImages(), ...userTexts()]}>
-                                    {(useUpload: UserUpload<any>) => (
+                                    {(userUpload: UserUpload<any>) => (
                                         <Box mt="0.5em" mb="0.5em">
                                             <Flex>
-                                                <Show when={useUpload.url != null || useUpload.data != null} fallback={<Box width="1.5em">✏️</Box>}>
-                                                    <Image src={(useUpload.url ?? useUpload.data)!} width="1.5em" height="1.5em" alt={useUpload.uuid} />
+                                                <Show when={userUpload.url != null || userUpload.data != null} fallback={<Box width="1.5em">✏️</Box>}>
+                                                    <Image src={(userUpload.url ?? userUpload.data)!} width="1.5em" height="1.5em" alt={userUpload.uuid} />
                                                 </Show>
-                                                <Box flex="1" class="max-lines-1 pointer" pl="0.5em" onClick={editElementName(useUpload.uuid, useUpload.type, useUpload.name)}>
-                                                    {useUpload.name ?? useUpload.uuid}
+                                                <Tooltip label="click to edit name" placement="top">
+                                                    <Box flex="1" class="max-lines-1 pointer" pl="0.5em" onClick={editElementName(userUpload.uuid, userUpload.type, userUpload.name)}>
+                                                        {userUpload.name ?? userUpload.uuid}
+                                                    </Box>
+                                                </Tooltip>
+                                                <Box width="4.5em">
+                                                    <Tooltip label="Duplicate" placement="left"><span class="pointer" onClick={duplicateItem(userUpload.uuid, userUpload.type)}>✌</span></Tooltip>
+                                                    &nbsp;
+                                                    <Tooltip label="Open Edit menu" placement="left"><span class="pointer" onClick={triggerEdit(userUpload.uuid)}>📝</span></Tooltip>
+                                                    &nbsp;
+                                                    <Tooltip label="Delete" placement="left"><span class="pointer" onClick={deleteItem(userUpload.uuid, userUpload.type)}>🗑️</span></Tooltip>
                                                 </Box>
-                                                <Show when={useUpload.type === UserUploadTypes.img}>
-                                                    <Box width="3em">
-                                                        <span class="pointer" onClick={triggerEdit(useUpload.uuid)}>📝</span>
-                                                        &nbsp;
-                                                        <span class="pointer" onClick={deleteUserImage(useUpload.uuid)}>🗑️</span>
-                                                    </Box>
-                                                </Show>
-                                                <Show when={useUpload.type === UserUploadTypes.txt}>
-                                                    <Box width="3em">
-                                                        <span class="pointer" onClick={triggerEdit(useUpload.uuid)}>📝</span>
-                                                        &nbsp;
-                                                        <span class="pointer"
-                                                            onClick={() => setUserTexts((prev: Array<UserUpload<IPassTextTemplateProps>>) => prev.filter(t => t.uuid !== useUpload.uuid))}>🗑️</span>
-                                                    </Box>
-                                                </Show>
                                             </Flex>
                                         </Box>
                                     )}
