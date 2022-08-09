@@ -74,6 +74,9 @@ export const BuilderPage: Component = () => {
                 uuid: uuidv4(),
                 type: UserUploadTypes.img,
                 data: URL.createObjectURL(file),
+                templateData: {
+                    zIndex: [...userImages(), ...userTexts()].length + 1,
+                }
             });
         }
         setUserImages((prev) => [...prev, ...objUrls]);
@@ -85,6 +88,9 @@ export const BuilderPage: Component = () => {
             uuid: uuidv4(),
             type: UserUploadTypes.img,
             url: imgStr,
+            templateData: {
+                zIndex: [...userImages(), ...userTexts()].length + 1,
+            }
         };
         setUserImages((prev) => [...prev, imgObj]);
     }
@@ -107,6 +113,9 @@ export const BuilderPage: Component = () => {
         const newTextObj: UserUpload<IPassTextTemplateProps> = {
             uuid: uuidv4(),
             type: UserUploadTypes.txt,
+            templateData: {
+                zIndex: [...userImages(), ...userTexts()].length + 1,
+            }
         };
         setUserTexts((prev) => [...prev, newTextObj]);
     }
@@ -144,19 +153,25 @@ export const BuilderPage: Component = () => {
     }
 
     const duplicateItem = (uuid: string, type: string) => () => {
+
+        function editIfNeeded<T>(prevItem: UserUpload<T>, localUuid: string): Array<UserUpload<T>> {
+            if (prevItem.uuid !== localUuid) return [prevItem];
+
+            let fetchedTemplateData: any = { ...prevItem.templateData };
+            try {
+                const jsonData = getElementTemplateData(localUuid);
+                fetchedTemplateData = jsonData.templateData;
+            } catch (ex) {
+                console.error(ex);
+            }
+            return [prevItem, { ...prevItem, uuid: uuidv4().toString(), templateData: fetchedTemplateData }];
+        };
+
         if (type === UserUploadTypes.img) {
-            setUserImages(prev => prev.flatMap(img =>
-                (img.uuid === uuid) //
-                    ? [img, { ...img, uuid: uuidv4().toString() }]
-                    : [img])
-            );
+            setUserImages(prev => prev.flatMap(img => editIfNeeded(img, uuid)));
         }
         if (type === UserUploadTypes.txt) {
-            setUserTexts(prev => prev.flatMap(img =>
-                (img.uuid === uuid) //
-                    ? [img, { ...img, uuid: uuidv4().toString() }]
-                    : [img])
-            );
+            setUserTexts(prev => prev.flatMap(txt => editIfNeeded(txt, uuid)));
         }
     }
 
