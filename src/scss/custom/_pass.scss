@@ -143,6 +143,7 @@
     .pass-bg-img {
         height: 100%;
         min-width: 100%;
+        will-change: opacity;
         object-fit: cover;
     }
 }

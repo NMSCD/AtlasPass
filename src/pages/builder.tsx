@@ -415,6 +415,7 @@ export const BuilderPage: Component = () => {
                                     value={backgroundImageOpacity()}
                                     min="0"
                                     max="100"
+                                    step="1"
                                     type="range"
                                 />
                             </FormControl>
