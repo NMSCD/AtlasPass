@@ -3,6 +3,7 @@ import {
 } from '@hope-ui/solid';
 import { Component, createSignal, For, onCleanup, Show } from 'solid-js';
 import { v4 as uuidv4 } from 'uuid';
+import { LayerList } from '../components/builder/layerList';
 import { SimpleDropDown } from '../components/common/dropdown';
 import { Header } from '../components/common/header';
 import { LoadTemplateModal } from '../components/loadTemplateModal';
@@ -25,6 +26,7 @@ import { stringInputPopup } from '../helper/popupHelper';
 export const BuilderPage: Component = () => {
     const [isMobileAnnouncementAccepted, setMobileAnnouncementAccepted] = createSignal(false);
     const [isTemplateState, setTemplateState] = createSignal(NetworkState.Success);
+    const [indexChangeRefreshCounter, setIndexChangeRefreshCounter] = createSignal(0);
 
     const [useCustomBackgroundImage, setUseCustomBackgroundImage] = createSignal(false);
     const [isPortrait, setIsPortrait] = createSignal(false);
@@ -38,7 +40,7 @@ export const BuilderPage: Component = () => {
 
     const [promoteToShow, setPromoteToShow] = createSignal(PromoteType.none);
 
-    const [selectedElement, setSelectedElement] = createSignal(null);
+    const [selectedElement, setSelectedElement] = createSignal<string | undefined>(undefined);
 
     const [gridRefKey, setGridRefKey] = createSignal('0-0');
     let gridRef: any;
@@ -163,7 +165,16 @@ export const BuilderPage: Component = () => {
             } catch (ex) {
                 console.error(ex);
             }
-            return [prevItem, { ...prevItem, uuid: uuidv4().toString(), templateData: fetchedTemplateData }];
+            const editedItem = {
+                ...prevItem,
+                uuid: uuidv4().toString(),
+                templateData: {
+                    ...fetchedTemplateData,
+                    initX: fetchedTemplateData.initX + 5,
+                    initY: fetchedTemplateData.initY + 5,
+                }
+            }
+            return [prevItem, editedItem];
         };
 
         if (type === UserUploadTypes.img) {
@@ -172,11 +183,6 @@ export const BuilderPage: Component = () => {
         if (type === UserUploadTypes.txt) {
             setUserTexts(prev => prev.flatMap(txt => editIfNeeded(txt, uuid)));
         }
-    }
-
-    const triggerEdit = (uuid: string) => () => {
-        const editOnSpecificItem: any = document.querySelector('#id' + uuid + ' .edit-handle');
-        editOnSpecificItem?.click?.();
     }
 
     const deleteItem = (uuid: string, type: string) => () => {
@@ -266,12 +272,13 @@ export const BuilderPage: Component = () => {
                                     <PassImage
                                         uuid={imgObj.uuid}
                                         name={imgObj.name}
-                                        isSelected={imgObj.uuid == selectedElement()}
+                                        isSelected={imgObj.uuid === selectedElement()}
                                         src={imgObj.url ?? imgObj.data}
                                         templateData={imgObj.templateData}
                                         enableGridSnap={enableGrid()}
                                         gridSnapPoints={gridSnapPoints()}
                                         onDelete={deleteUserImage(imgObj.uuid)}
+                                        onZIndexChange={() => setIndexChangeRefreshCounter(prev => prev + 1)}
                                     />
                                 )}
                             </For>
@@ -280,7 +287,7 @@ export const BuilderPage: Component = () => {
                                     <PassText
                                         uuid={textObj.uuid}
                                         name={textObj.name}
-                                        isSelected={textObj.uuid == selectedElement()}
+                                        isSelected={textObj.uuid === selectedElement()}
                                         templateData={textObj.templateData}
                                         enableGridSnap={enableGrid()}
                                         gridSnapPoints={gridSnapPoints()}
@@ -472,29 +479,15 @@ export const BuilderPage: Component = () => {
                                 <AccordionIcon />
                             </AccordionButton>
                             <AccordionPanel>
-                                <For each={[...userImages(), ...userTexts()]}>
-                                    {(userUpload: UserUpload<any>) => (
-                                        <Box mt="0.5em" mb="0.5em">
-                                            <Flex>
-                                                <Show when={userUpload.url != null || userUpload.data != null} fallback={<Box width="1.5em">✏️</Box>}>
-                                                    <Image src={(userUpload.url ?? userUpload.data)!} width="1.5em" height="1.5em" alt={userUpload.uuid} />
-                                                </Show>
-                                                <Tooltip label="click to edit name" placement="top">
-                                                    <Box flex="1" class="max-lines-1 pointer" pl="0.5em" onClick={editElementName(userUpload.uuid, userUpload.type, userUpload.name)}>
-                                                        {userUpload.name ?? userUpload.uuid}
-                                                    </Box>
-                                                </Tooltip>
-                                                <Box width="4.5em">
-                                                    <Tooltip label="Duplicate" placement="left"><span class="pointer" onClick={duplicateItem(userUpload.uuid, userUpload.type)}>✌</span></Tooltip>
-                                                    &nbsp;
-                                                    <Tooltip label="Open Edit menu" placement="left"><span class="pointer" onClick={triggerEdit(userUpload.uuid)}>📝</span></Tooltip>
-                                                    &nbsp;
-                                                    <Tooltip label="Delete" placement="left"><span class="pointer" onClick={deleteItem(userUpload.uuid, userUpload.type)}>🗑️</span></Tooltip>
-                                                </Box>
-                                            </Flex>
-                                        </Box>
-                                    )}
-                                </For>
+                                <LayerList
+                                    indexChangeRefreshCounter={indexChangeRefreshCounter()}
+                                    userUploads={[...userImages(), ...userTexts()]}
+                                    selectedElement={selectedElement()}
+                                    selectItem={(uuid) => setSelectedElement(uuid)}
+                                    editElementName={editElementName}
+                                    duplicateItem={duplicateItem}
+                                    deleteItem={deleteItem}
+                                />
                                 <Box textAlign="center" mt="1em" mb="0.5em">
                                     <Button colorScheme="warning" width="$full" onClick={exportAsTemplate}>Export as template (experimental)</Button>
                                 </Box>

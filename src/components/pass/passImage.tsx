@@ -20,6 +20,7 @@ interface IPassImageProps {
     gridSnapPoints: number;
     templateData?: IPassImageTemplateProps;
     onDelete: () => void;
+    onZIndexChange: () => void;
 }
 
 export const PassImage: Component<IPassImageProps> = (props: IPassImageProps) => {
@@ -74,6 +75,11 @@ export const PassImage: Component<IPassImageProps> = (props: IPassImageProps) =>
         );
     }
 
+    const onSetZIndex = (newValue: number) => {
+        setZIndex(newValue);
+        props.onZIndexChange();
+    }
+
     return (
         <>
             <PassDraggable
@@ -110,7 +116,7 @@ export const PassImage: Component<IPassImageProps> = (props: IPassImageProps) =>
                             <Box width="15px"></Box>
                             <ItemIndexFormControl
                                 flex="2" mt="0.5em" mb="0.5em"
-                                setZIndex={setZIndex}
+                                setZIndex={onSetZIndex}
                                 zIndexValue={zIndex}
                             />
                         </Flex>

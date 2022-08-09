@@ -19,5 +19,15 @@
         max-height: 100%;
         overflow: auto;
         z-index: 1;
+
+        .layer-img {
+            border-radius: 2px;
+            border: 1px dashed transparent;
+            transition: border-color 250ms ease-in-out;
+
+            &.is-selected {
+                border: 1px dashed white;
+            }
+        }
     }
 }

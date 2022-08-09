@@ -228,6 +228,12 @@ export const PassDraggable: Component<IPassDraggableProps> = (props: IPassDragga
         props.onEdit?.();
     }
 
+    const getZIndex = (partial: IPassDraggableTemplateProps, isSelected?: boolean) => {
+        const currentZIndex = partial?.templateData?.zIndex ?? 1;
+        if (isSelected) return currentZIndex + 1000;
+        return currentZIndex;
+    }
+
     const funcs: IPassDraggableFunctions = {
         mouseDown,
         touchStart,
@@ -252,12 +258,12 @@ export const PassDraggable: Component<IPassDraggableProps> = (props: IPassDragga
             style={{
                 top: state.y + 'px',
                 left: state.x + 'px',
-                'z-index': props.partialTemplateData?.templateData?.zIndex ?? 1,
+                'z-index': getZIndex(props.partialTemplateData, props.isSelected),
                 'min-width': (state.width ?? 0) + 'px',
                 'min-height': (state.height ?? 0) + 'px',
                 transform: `rotate(${props.partialTemplateData?.templateData?.rotation ?? 0}deg)`
             }}>
-            <div class="content">
+            <div class={classNames('content', { 'is-selected': props.isSelected == true })}>
                 {props.renderChild(props, state, funcs)}
                 <Show when={props.onEdit != null}>
                     <div class="edit-handle show-on-hover" onClick={onEditClick}>
