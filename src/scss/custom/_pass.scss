@@ -150,15 +150,30 @@
 .modal-select {
     cursor: pointer;
 
-    img {
+    &.hover-enlarge,
+    .hover-enlarge {
         transition: all 150ms ease-in-out;
     }
 
-    &:hover img {
+    &:hover.hover-enlarge,
+    &:hover .hover-enlarge {
         transform: scale(1.25);
+
+        &.small-hover {
+            transform: scale(1.125);
+        }
     }
 
-    &.small-hover:hover img {
-        transform: scale(1.125);
+    .predefined-bg-img {
+        padding: 1em;
+
+        img {
+            border-radius: 1em;
+            transition: all 150ms ease-in-out;
+
+            &:hover {
+                transform: scale(1.05);
+            }
+        }
     }
 }

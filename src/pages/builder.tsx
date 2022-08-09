@@ -1,10 +1,9 @@
 import {
-    Accordion, AccordionButton, AccordionIcon, AccordionItem, AccordionPanel, Box, Button, Center, Checkbox, classNames, Flex, FormControl, FormLabel, Image, Input, Radio, RadioGroup, Spinner, Text, Tooltip, VStack
+    Accordion, AccordionButton, AccordionIcon, AccordionItem, AccordionPanel, Box, Button, Center, Checkbox, classNames, Flex, FormControl, FormLabel, Image, Input, Radio, RadioGroup, Spinner, Text, VStack
 } from '@hope-ui/solid';
 import { Component, createSignal, For, onCleanup, Show } from 'solid-js';
 import { v4 as uuidv4 } from 'uuid';
 import { LayerList } from '../components/builder/layerList';
-import { SimpleDropDown } from '../components/common/dropdown';
 import { Header } from '../components/common/header';
 import { LoadTemplateModal } from '../components/loadTemplateModal';
 import { PassBackground } from '../components/pass/passBackground';
@@ -12,7 +11,7 @@ import { PassGrid } from '../components/pass/passGrid';
 import { IPassImageTemplateProps, PassImage } from '../components/pass/passImage';
 import { IPassTextTemplateProps, PassText } from '../components/pass/passText';
 import { PredefinedImageModal } from '../components/predefinedImageModal';
-import { builtInBackgrounds, imageFilter } from '../constants/background';
+import { backgroundNmsCover, backgroundsFolder, builtInBackgrounds, imageFilter } from '../constants/background';
 import { NetworkState } from '../constants/enum/networkState';
 import { PromoteType } from '../constants/enum/promoteType';
 import { assistantAppsWatermark, assistantNMSWatermark, nmscdWatermark, predefinedImages, predefinedPath } from '../constants/images';
@@ -32,7 +31,7 @@ export const BuilderPage: Component = () => {
     const [isPortrait, setIsPortrait] = createSignal(false);
     const [enableGrid, setEnableGrid] = createSignal(false);
     const [gridSnapPoints, setGridSnapPoints] = createSignal(50);
-    const [backgroundImage, setBackgroundImage] = createSignal(builtInBackgrounds[0].imgUrl);
+    const [backgroundImage, setBackgroundImage] = createSignal(backgroundNmsCover);
     const [backgroundImageOpacity, setBackgroundImageOpacity] = createSignal(70);
 
     const [userImages, setUserImages] = createSignal<Array<UserUpload<IPassImageTemplateProps>>>([]);
@@ -376,13 +375,20 @@ export const BuilderPage: Component = () => {
                             </Show>
 
                             <Show when={useCustomBackgroundImage() == false}>
-                                <FormControl mt="0.5em" mb="0.5em">
-                                    <SimpleDropDown
-                                        label="Background Image"
-                                        placeholder="Background Image"
-                                        options={builtInBackgrounds.map(bg => ({ name: bg.name, value: bg.imgUrl }))}
-                                        setValue={setBackgroundImage}
-                                        value={backgroundImage}
+                                <FormControl mt="1em" mb="0.5em">
+                                    <PredefinedImageModal
+                                        gridColumns={4}
+                                        gap="$0"
+                                        images={builtInBackgrounds}
+                                        buttonText="Background selection"
+                                        onImageSelect={(imgStr) => setBackgroundImage(backgroundsFolder + imgStr)}
+                                        imageRenderer={(imgStr) => (
+                                            <Box class="predefined-bg-img">
+                                                <Image
+                                                    src={backgroundsFolder + imgStr} alt={imgStr}
+                                                />
+                                            </Box>
+                                        )}
                                     />
                                 </FormControl>
                             </Show>
@@ -433,9 +439,17 @@ export const BuilderPage: Component = () => {
                             </FormControl>
                             <FormControl mt="1em" mb="0.5em">
                                 <PredefinedImageModal
+                                    gap="$10"
+                                    minChildWidth="4em"
                                     images={predefinedImages}
-                                    imagePath={(imgStr) => predefinedPath + imgStr}
-                                    onImageSelect={onSelectPredefinedImage}
+                                    buttonText="Add from selection"
+                                    onImageSelect={(imgStr) => onSelectPredefinedImage(predefinedPath + imgStr)}
+                                    imageRenderer={(imgStr) => (
+                                        <Image
+                                            src={predefinedPath + imgStr} alt={imgStr}
+                                            class="hover-enlarge"
+                                        />
+                                    )}
                                 />
                             </FormControl>
                         </AccordionPanel>

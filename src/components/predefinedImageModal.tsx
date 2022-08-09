@@ -1,39 +1,45 @@
-import { Button, Center, createDisclosure, Image, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, SimpleGrid } from '@hope-ui/solid';
-import { Component, For } from 'solid-js';
+import { Button, Center, createDisclosure, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, ResponsiveValue, SimpleGrid } from '@hope-ui/solid';
+import { For, JSX } from 'solid-js';
 
-interface IPredefinedImageModalProps {
-    images: Array<string>;
-    imagePath: (imgStr: string) => string;
-    onImageSelect: (imgPath: string) => void;
+interface IPredefinedImageModalProps<T> {
+    buttonText: string;
+    images: Array<T>;
+    gridColumns?: ResponsiveValue<number>;
+    minChildWidth?: any;
+    gap?: any;
+    onImageSelect: (imgPath: T) => void;
+    imageRenderer: (item: T) => JSX.Element;
 }
 
-export const PredefinedImageModal: Component<IPredefinedImageModalProps> = (props: IPredefinedImageModalProps) => {
+export function PredefinedImageModal<T>(props: IPredefinedImageModalProps<T>) {
     const { isOpen, onOpen, onClose } = createDisclosure();
 
-    const onImageClick = (imgStr: string) => () => {
-        const fullPath = props.imagePath(imgStr);
-        props.onImageSelect(fullPath);
+    const onImageClick = (imgObj: T) => () => {
+        props.onImageSelect(imgObj);
         onClose();
     }
 
     return (
         <>
-            <Button variant="outline" onClick={onOpen}>Add from selection</Button>
+            <Button variant="outline" onClick={onOpen}>{props.buttonText}</Button>
             <Modal size="full" opened={isOpen()} onClose={onClose}>
                 <ModalOverlay />
                 <ModalContent>
                     <ModalCloseButton />
                     <ModalHeader>Image selection</ModalHeader>
                     <ModalBody>
-                        <SimpleGrid minChildWidth="4em" gap="$10">
+                        <SimpleGrid
+                            minChildWidth={props.minChildWidth}
+                            columns={props.gridColumns}
+                            gap={props.gap}
+                        >
                             <For each={props.images}>
-                                {imgStr => (
-                                    <Center class="modal-select" maxH="10em" maxW="10em">
-                                        <Image
-                                            src={props.imagePath(imgStr)} alt={imgStr}
-                                            class="predefined-img"
-                                            onClick={onImageClick(imgStr)}
-                                        />
+                                {(imgObj: T) => (
+                                    <Center
+                                        class="modal-select"
+                                        onClick={onImageClick(imgObj)}
+                                    >
+                                        {props.imageRenderer(imgObj)}
                                     </Center>
                                 )}
                             </For>

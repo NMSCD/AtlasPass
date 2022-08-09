@@ -1,4 +1,3 @@
-import { BackgroundOption } from "../contracts/backgroundOption";
 
 export const backgroundsFolder = '/assets/img/backgrounds/';
 export const backgroundNmsCover = backgroundsFolder + 'nmsCover.jpg';
@@ -10,39 +9,25 @@ export const backgroundHexagon1 = backgroundsFolder + 'hexagon1.png';
 export const backgroundAtlasPass1 = backgroundsFolder + 'atlasPass1.png';
 export const backgroundAtlasPass2 = backgroundsFolder + 'atlasPass2.png';
 
-export const builtInBackgrounds: Array<BackgroundOption> = [
-    {
-        name: 'NMS Cover image',
-        imgUrl: backgroundNmsCover,
-    },
-    {
-        name: 'Atlas Rising',
-        imgUrl: backgroundAtlasPassCover1,
-    },
-    {
-        name: 'Sphynxcolt1',
-        imgUrl: backgroundSphynx1,
-    },
-    {
-        name: 'Sphynxcolt2',
-        imgUrl: backgroundSphynx2,
-    },
-    {
-        name: 'Sphynxcolt3',
-        imgUrl: backgroundSphynx3,
-    },
-    {
-        name: 'Hexagon1',
-        imgUrl: backgroundHexagon1,
-    },
-    {
-        name: 'Atlas Pass Vector (Sphynxcolt)',
-        imgUrl: backgroundAtlasPass2,
-    },
-    {
-        name: 'Atlas Pass Level 4',
-        imgUrl: backgroundAtlasPass1,
-    },
+export const builtInBackgrounds: Array<string> = [
+    'atlasPass1.png',
+    'atlasPass2.png',
+    'atlasPassCover1.jpg',
+    'hexagon1.png',
+    'nmsCover.jpg',
+    'sphynx1.png',
+    'sphynx2.png',
+    'sphynx3.png',
+    'sphynx_abstract.png',
+    'sphynx_colourful01.png',
+    'sphynx_cyber.png',
+    'sphynx_flower.png',
+    'sphynx_gravity.png',
+    'sphynx_lazerrrzzz.png',
+    'sphynx_lazers02.png',
+    'sphynx_pattern01.png',
+    'sphynx_smoke01.png',
+    'sphynx_trails.png',
 ];
 
 

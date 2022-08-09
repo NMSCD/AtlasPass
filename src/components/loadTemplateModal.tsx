@@ -26,7 +26,7 @@ export const LoadTemplateModal: Component<ILoadTemplateModalProps> = (props: ILo
                         <Flex gap="$10" justifyContent="center">
                             <For each={allTemplates}>
                                 {template => (
-                                    <Center class="modal-select small-hover" maxH="10em" maxW="10em" flexDirection="column">
+                                    <Center class="modal-select hover-enlarge small-hover" maxH="10em" maxW="10em" flexDirection="column">
                                         <Image
                                             p="1em"
                                             src={template.imgUrl}
