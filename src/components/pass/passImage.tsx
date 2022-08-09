@@ -1,4 +1,4 @@
-import { Box, Button, createDisclosure, Flex, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay } from '@hope-ui/solid';
+import { Box, Button, Checkbox, createDisclosure, Flex, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay } from '@hope-ui/solid';
 import { Component, createMemo, createSignal, JSX } from 'solid-js';
 import { UserUploadTypes } from '../../contracts/userUpload';
 import { anyObject } from '../../helper/typescriptHacks';
@@ -32,6 +32,8 @@ export const PassImage: Component<IPassImageProps> = (props: IPassImageProps) =>
 
     const [rotation, setRotation] = createSignal(templRotation);
     const [zIndex, setZIndex] = createSignal(templZIndex);
+    const [horizontalFlip, setHorizontalFlip] = createSignal(false);
+    const [verticalFlip, setVerticalFlip] = createSignal(false);
 
     const renderImage = (
         draggableProps: IPassDraggableProps,
@@ -66,6 +68,7 @@ export const PassImage: Component<IPassImageProps> = (props: IPassImageProps) =>
                 style={{
                     'width': styleWidth(),
                     'height': styleHeight(),
+                    'transform': `scaleX(${horizontalFlip() ? '-1' : '1'}) scaleY(${verticalFlip() ? '-1' : '1'})`
                 }}
             />
         );
@@ -84,6 +87,8 @@ export const PassImage: Component<IPassImageProps> = (props: IPassImageProps) =>
                     templateData: {
                         rotation: rotation(),
                         zIndex: zIndex(),
+                        horizontalFlip: horizontalFlip(),
+                        verticalFlip: verticalFlip(),
                     }
                 }}
                 renderChild={renderImage}
@@ -108,6 +113,19 @@ export const PassImage: Component<IPassImageProps> = (props: IPassImageProps) =>
                                 setZIndex={setZIndex}
                                 zIndexValue={zIndex}
                             />
+                        </Flex>
+                        <Flex>
+                            <Checkbox
+                                mt="0.5em"
+                                checked={horizontalFlip()}
+                                onChange={() => setHorizontalFlip((prev) => !prev)}
+                            >Flip Horizontal</Checkbox>
+                            <Box width="15px"></Box>
+                            <Checkbox
+                                mt="0.5em"
+                                checked={verticalFlip()}
+                                onChange={() => setVerticalFlip((prev) => !prev)}
+                            >Flip Vertical</Checkbox>
                         </Flex>
                     </ModalBody>
                     <ModalFooter>

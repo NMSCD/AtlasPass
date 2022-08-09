@@ -318,7 +318,7 @@ export const BuilderPage: Component = () => {
 
                             <Show when={enableGrid() == true}>
                                 <FormControl mt="0.5em" mb="0.5em">
-                                    <FormLabel for="grid-snap-points">Grid snap points</FormLabel>
+                                    <FormLabel for="grid-snap-points">Grid snap points (px)</FormLabel>
                                     <Input
                                         id="grid-snap-points"
                                         onInput={(e: any) => setGridSnapPoints(e?.target?.value ?? 50)}
