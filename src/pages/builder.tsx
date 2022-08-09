@@ -214,7 +214,7 @@ export const BuilderPage: Component = () => {
     return (
         <Flex class="builder noselect">
             <Box class="builder-preview" overflow="hidden">
-                <Center flexDirection="column" onDragOver={(ev: any) => ev?.preventDefault?.()}>
+                <Center flexDirection="column" height="100%" onDragOver={(ev: any) => ev?.preventDefault?.()}>
                     <Box ref={gridRef} class={classNames('pass-container', isPortrait() ? 'is-portrait' : '')}>
                         <div class="pass-container-img">
                             <PassBackground
@@ -286,7 +286,7 @@ export const BuilderPage: Component = () => {
                                     <LoadTemplateModal setTemplate={setTemplate} />
                                 </FormControl>
                                 <FormControl mt="0.5em" mb="0.5em">
-                                    <Button colorScheme="warning" variant="outline" onClick={() => setTemplate(customTemplate)}>Tenplate from JSON (experimental)</Button>
+                                    <Button colorScheme="warning" variant="outline" onClick={() => setTemplate(customTemplate)}>Template from JSON (experimental)</Button>
                                 </FormControl>
                             </Show>
                         </AccordionPanel>

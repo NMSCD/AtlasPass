@@ -60,8 +60,6 @@ export const PassDraggable: Component<IPassDraggableProps> = (props: IPassDragga
         height: props.initHeight,
     });
 
-    console.log('state', { ...state });
-
     onMount(() => {
         batch(() => {
             parent = dialog.parentNode;
@@ -235,7 +233,6 @@ export const PassDraggable: Component<IPassDraggableProps> = (props: IPassDragga
         touchStart,
     }
 
-    console.log(props.partialTemplateData?.templateData)
     return (
         <div
             id={props.partialTemplateData.uuid != null ? 'id' + props.partialTemplateData.uuid : undefined}
