@@ -1,6 +1,6 @@
 import { BackgroundOption } from "../contracts/backgroundOption";
 
-export const backgroundsFolder = '/assets/img/';
+export const backgroundsFolder = '/assets/img/backgrounds/';
 export const backgroundNmsCover = backgroundsFolder + 'nmsCover.jpg';
 export const backgroundAtlasPassCover1 = backgroundsFolder + 'atlasPassCover1.jpg';
 export const backgroundSphynx1 = backgroundsFolder + 'sphynx1.png';
