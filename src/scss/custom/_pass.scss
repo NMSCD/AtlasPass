@@ -108,7 +108,7 @@
         max-height: 2em;
     }
 
-    .pass-grid-wrapper {
+    .pass-grid {
         position: absolute;
         top: 0;
         left: 0;
@@ -117,20 +117,17 @@
         overflow: hidden;
         pointer-events: none;
 
-        .pass-grid {
-            width: calc(100% + var(--grid-snap-point, 50px));
-            height: calc(100% + var(--grid-snap-point, 50px));
-            display: grid;
-            grid-template-columns: repeat(auto-fit, var(--grid-snap-point, 50px));
-            grid-template-rows: repeat(auto-fit, var(--grid-snap-point, 50px));
-            grid-gap: 0;
+        .grid-row {
+            width: 100%;
+            height: var(--grid-snap-point, 50px);
+            border-bottom: 2px dashed #ffa94d38;
+        }
 
-            .grid-item {
-                width: var(--grid-snap-point, 50px);
-                height: var(--grid-snap-point, 50px);
-                border-right: 2px dashed #ffa94d38;
-                border-bottom: 2px dashed #ffa94d38;
-            }
+        .grid-col {
+            display: inline-block;
+            width: var(--grid-snap-point, 50px);
+            height: 100%;
+            border-right: 2px dashed #ffa94d38;
         }
     }
 }
@@ -152,6 +149,7 @@
 
 .modal-select {
     cursor: pointer;
+
     img {
         transition: all 150ms ease-in-out;
     }
