@@ -138,7 +138,7 @@ export const BuilderPage: Component = () => {
             setUserImages,
             setUserTexts,
             setPromoteToShow,
-        };
+        };// y no 17 release
 
         setTemplateState(NetworkState.Loading);
         try {
