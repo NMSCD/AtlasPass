@@ -39,10 +39,10 @@ export const builtInBackgrounds: Array<BackgroundOption> = [
         name: 'Atlas Pass Vector (Sphynxcolt)',
         imgUrl: backgroundAtlasPass2,
     },
-    // {
-    //     name: 'Atlas Pass Level 4',
-    //     imgUrl: backgroundAtlasPass1,
-    // },
+    {
+        name: 'Atlas Pass Level 4',
+        imgUrl: backgroundAtlasPass1,
+    },
 ];
 
 
