@@ -1,34 +1,36 @@
-## Usage
+<div align="center">
+  
+  # Atlas Pass Creator
+  ![header](./.github/images/banner.png)
+  
+  <br />
+  
+  ![madeWithLove](./.github/img/made-with-love.svg)
+  [![licence](./.github/img/licence-badge.svg)](https://github.com/AssistantNMS/App/blob/master/LICENCE.md)<br />
+  [![Supported by the No Man's Sky Community Developers & Designers](https://raw.githubusercontent.com/NMSCD/About/master/badge/purple-ftb.svg)][nmscd] 
+  
+  <br /> 
+</div>
 
-Those templates dependencies are maintained via [pnpm](https://pnpm.io) via `pnpm up -Lri`.
+Create your own Atlas Pass quickly and easily using this NMSCD tool! Easily upload custom backgrounds and images, style text, snap elements to the grid, manage layers and so much more!
 
-This is the reason you see a `pnpm-lock.yaml`. That being said, any package manager will work. This file can be safely removed once you clone a template.
+<!-- Links used in the page -->
 
-```bash
-$ npm install # or pnpm install or yarn install
-```
+[kurtGithub]: https://github.com/Khaoz-Topsy?ref=AssistantNMSGithub
+[assistantAppsTools]: https://tools.assistantapps.com?ref=AssistantNMSGithub
+[assistantnmsWebsite]: https://nmsassistant.com?ref=AssistantNMSGithub
+[assistantnmsWebapp]: https://app.nmsassistant.com?ref=AssistantNMSGithub
+[assistantnmsTwitter]: https://twitter.com/AssistantNMS?ref=AssistantNMSGithub
+[assistantnmsFacebook]: https://facebook.com/AssistantNMS?ref=AssistantNMSGithub
+[assistantnmsSteamComm]: https://steamcommunity.com/groups/AssistantNMS?ref=AssistantNMSGithub
+[googlePlayStore]: https://play.google.com/store/apps/details?id=com.kurtlourens.no_mans_sky_recipes&ref=AssistantNMSGithub
+[appleAppStore]: https://apps.apple.com/us/app/assistant-for-no-mans-sky/id1480287625?ref=AssistantNMSGithub
+[windowsStore]: https://apps.microsoft.com/store/detail/assistant-for-no-mans-sky/9NQLF7XD0LF3?ref=AssistantNMSGithub
+[discord]: https://assistantapps.com/discord?ref=AssistantNMSGithub
+[nmscd]: https://github.com/NMSCD?ref=AssistantNMSGithub
 
-### Learn more on the [Solid Website](https://solidjs.com) and come chat with us on our [Discord](https://discord.com/invite/solidjs)
-
-## Available Scripts
-
-In the project directory, you can run:
-
-### `npm dev` or `npm start`
-
-Runs the app in the development mode.<br>
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
-
-The page will reload if you make edits.<br>
-
-### `npm run build`
-
-Builds the app for production to the `dist` folder.<br>
-It correctly bundles Solid in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.<br>
-Your app is ready to be deployed!
-
-## Deployment
-
-You can deploy the `dist` folder to any static host provider (netlify, surge, now, etc.)
+<!-- Other -->
+[mbincompiler]: https://github.com/monkeyman192/MBINCompiler
+[flutter]: https://docs.flutter.dev/get-started/install
+[androidStudio]: https://developer.android.com/studio
+[codeMagic]: https://codemagic.io
