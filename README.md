@@ -1,18 +1,34 @@
 <div align="center">
   
-  # Atlas Pass Creator
   ![header](./.github/images/banner.png)
   
   <br />
   
-  ![madeWithLove](./.github/img/made-with-love.svg)
-  [![licence](./.github/img/licence-badge.svg)](https://github.com/AssistantNMS/App/blob/master/LICENCE.md)<br />
+  ![madeWithLove](./.github/images/made-with-love.svg)
+  [![licence](./.github/images/licence-badge.svg)](https://github.com/NMSCD/AtlasPass/blob/main/LICENCE.md)<br />
   [![Supported by the No Man's Sky Community Developers & Designers](https://raw.githubusercontent.com/NMSCD/About/master/badge/purple-ftb.svg)][nmscd] 
   
   <br /> 
 </div>
 
 Create your own Atlas Pass quickly and easily using this NMSCD tool! Easily upload custom backgrounds and images, style text, snap elements to the grid, manage layers and so much more!
+
+---
+
+<br />
+
+## 🏃‍♂️ Running the project
+  
+### Requirements
+- [NodeJS](https://nodejs.org/en/download/)
+
+### Steps:
+1. Clone this repository
+2. In the directory where the `package.json` file is, run `npm i`
+3. Run the webApp `npm run dev`
+4. View it on [localhost:3000](http://localhost:3000)
+
+<br />
 
 <!-- Links used in the page -->
 
