@@ -5,6 +5,7 @@
     width: 100vw;
     height: 100vh;
     background-color: #323232;
+    z-index: 2;
 }
 
 @media only screen and (max-width: 1000px) {
@@ -42,5 +43,11 @@
 @media only screen and (min-width: 1000px) {
     .mobile-announcement {
         display: none;
+    }
+}
+
+.hidden-in-tiny-mobile {
+    @media screen and (max-width: 500px) {
+        display: none !important;
     }
 }

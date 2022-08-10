@@ -21,7 +21,7 @@ export const Header: Component = () => {
                     <Image boxSize="75px" padding="0.5em" src="/assets/img/logo.png" />
                 </Center>
                 <Box pl="1em" flex="1" className="noselect">
-                    <Center height="100%">
+                    <Center class="hidden-in-tiny-mobile" height="100%">
                         <Heading level={1} size="3xl">Atlas Pass creator</Heading>
                     </Center>
                 </Box>
