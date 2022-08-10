@@ -80,6 +80,7 @@ export const BuilderPage: Component = () => {
             });
         }
         setUserImages((prev) => [...prev, ...objUrls]);
+        setTimeout(() => setIndexChangeRefreshCounter(prev => prev + 1), 250);
         event.target.value = null;
     }
 
@@ -93,6 +94,7 @@ export const BuilderPage: Component = () => {
             }
         };
         setUserImages((prev) => [...prev, imgObj]);
+        setTimeout(() => setIndexChangeRefreshCounter(prev => prev + 1), 250);
     }
 
     const deleteUserImage = (uuid: string) => () => {
@@ -118,6 +120,7 @@ export const BuilderPage: Component = () => {
             }
         };
         setUserTexts((prev) => [...prev, newTextObj]);
+        setTimeout(() => setIndexChangeRefreshCounter(prev => prev + 1), 250);
     }
 
     const downloadPng = async () => {
@@ -191,6 +194,7 @@ export const BuilderPage: Component = () => {
         if (type === UserUploadTypes.txt) {
             setUserTexts(prev => prev.filter(t => t.uuid !== uuid));
         }
+        setTimeout(() => setIndexChangeRefreshCounter(prev => prev + 1), 250);
     }
 
     const editElementName = (uuid: string, type: string, currentName: string) => async () => {
