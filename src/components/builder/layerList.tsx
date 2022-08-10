@@ -31,7 +31,7 @@ export const LayerList: Component<ILayerListProps> = (props: ILayerListProps) =>
         editOnSpecificItem?.click?.();
     }
 
-    const selectElement = (uuid: string) => {
+    const selectElement = (uuid: string) => () => {
         if (props.selectedElement == uuid) {
             props.selectItem();
         }
@@ -49,7 +49,8 @@ export const LayerList: Component<ILayerListProps> = (props: ILayerListProps) =>
                             <Box
                                 width="1.5em"
                                 class={classNames('layer-img', 'pointer', { 'is-selected': props.selectedElement === userUpload.uuid })}
-                                onClick={() => selectElement(userUpload.uuid)}
+                                onClick={selectElement(userUpload.uuid)}
+                                onDblClick={triggerEdit(userUpload.uuid)}
                             >
                                 <Show when={userUpload.url != null || userUpload.data != null} fallback={<span>✏️</span>}>
                                     <Image src={(userUpload.url ?? userUpload.data)!} width="1.5em" height="1.5em" alt={userUpload.uuid} />

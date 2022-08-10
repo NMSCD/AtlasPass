@@ -263,7 +263,7 @@ export const PassDraggable: Component<IPassDraggableProps> = (props: IPassDragga
                 'min-height': (state.height ?? 0) + 'px',
                 transform: `rotate(${props.partialTemplateData?.templateData?.rotation ?? 0}deg)`
             }}>
-            <div class={classNames('content', { 'is-selected': props.isSelected == true })}>
+            <div class={classNames('content', { 'is-selected': props.isSelected == true })} onDblClick={props.onEdit}>
                 {props.renderChild(props, state, funcs)}
                 <Show when={props.onEdit != null}>
                     <div class="edit-handle show-on-hover" onClick={onEditClick}>
