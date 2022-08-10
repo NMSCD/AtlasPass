@@ -13,8 +13,6 @@
 
 Create your own Atlas Pass quickly and easily using this NMSCD tool! Easily upload custom backgrounds and images, style text, snap elements to the grid, manage layers and so much more!
 
----
-
 <br />
 
 ## 🏃‍♂️ Running the project
