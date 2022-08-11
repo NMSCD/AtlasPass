@@ -1,10 +1,11 @@
-import { Box, Center, createDisclosure, Drawer, DrawerBody, DrawerCloseButton, DrawerContent, DrawerFooter, DrawerHeader, DrawerOverlay, Flex, Heading, Image } from '@hope-ui/solid';
+import { Box, Center, createDisclosure, Drawer, DrawerBody, DrawerCloseButton, DrawerContent, DrawerFooter, DrawerHeader, DrawerOverlay, Flex, Heading, Image, Spacer } from '@hope-ui/solid';
 import type { Component } from 'solid-js';
 
-import { HamburgerIcon } from '../icon/hamburgerIcon';
-import { BasicLink } from '../core/link';
-import { site } from '../../constants/site';
 import packageJson from '../../../package.json';
+import { site } from '../../constants/site';
+import { BasicLink } from '../core/link';
+import { HamburgerIcon } from '../icon/hamburgerIcon';
+import { WhatIsNewModal } from '../whatIsNewModal';
 
 export const Header: Component = () => {
     const { isOpen, onOpen, onClose } = createDisclosure();
@@ -47,6 +48,7 @@ export const Header: Component = () => {
                         <p>🞄&nbsp;<BasicLink href={site.nmscd.github} title={`${site.nmscd.nickName} Github Org`}>{`${site.nmscd.nickName} Github Organisation`}</BasicLink></p>
                         <p>🞄&nbsp;<BasicLink href={site.gitRepo} title="Source code">Source code</BasicLink></p>
                         <br />
+                        <WhatIsNewModal />
                     </DrawerBody>
                     <DrawerFooter>
                         <p style="text-align: right">
