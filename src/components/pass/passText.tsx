@@ -1,4 +1,4 @@
-import { Box, Button, createDisclosure, Flex, FormControl, FormLabel, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay } from '@hope-ui/solid';
+import { Box, Button, Checkbox, createDisclosure, Flex, FormControl, FormLabel, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay } from '@hope-ui/solid';
 import { Component, createMemo, createSignal, JSX } from 'solid-js';
 import { builtInFonts, textAlignOptions } from '../../constants/fonts';
 import { UserUploadTypes } from '../../contracts/userUpload';
@@ -16,11 +16,15 @@ export interface IPassTextTemplateProps extends IPassDraggablePositionProps {
     fontRotation?: number;
     fontAlign?: string;
     zIndex?: number;
+    isCenterHorizontally?: boolean;
+    isCenterVertically?: boolean;
 }
 
 interface IPassTextProps {
     uuid: string;
     name?: string;
+    gridWidth: number;
+    gridHeight: number;
     isSelected: boolean;
     enableGridSnap: boolean;
     gridSnapPoints: number;
@@ -37,6 +41,8 @@ export const PassText: Component<IPassTextProps> = (props: IPassTextProps) => {
         fontRotation: templFontRotation = 0,
         fontAlign: templFontAlign = textAlignOptions[0].value,
         zIndex: templZIndex = 1,
+        isCenterHorizontally = false,
+        isCenterVertically = false,
     } = props.templateData ?? anyObject;
 
     const { isOpen, onOpen, onClose } = createDisclosure();
@@ -48,6 +54,9 @@ export const PassText: Component<IPassTextProps> = (props: IPassTextProps) => {
     const [rotation, setFontRotation] = createSignal(templFontRotation);
     const [fontAlign, setFontAlign] = createSignal(templFontAlign);
     const [zIndex, setZIndex] = createSignal(templZIndex);
+    const [centerHorizontally, setCenterHorizontally] = createSignal(isCenterHorizontally);
+    const [centerVertically, setCenterVertically] = createSignal(isCenterVertically);
+
 
     const renderText = (
         draggableProps: IPassDraggableProps,
@@ -97,6 +106,8 @@ export const PassText: Component<IPassTextProps> = (props: IPassTextProps) => {
             <PassDraggable
                 {...props}
                 {...props.templateData}
+                isCenterHorizontally={centerHorizontally()}
+                isCenterVertically={centerVertically()}
                 partialTemplateData={{
                     uuid: props.uuid,
                     name: props.name,
@@ -183,6 +194,19 @@ export const PassText: Component<IPassTextProps> = (props: IPassTextProps) => {
                                 setZIndex={setZIndex}
                                 zIndexValue={zIndex}
                             />
+                        </Flex>
+                        <Flex>
+                            <Checkbox
+                                mt="0.5em"
+                                checked={centerHorizontally()}
+                                onChange={() => setCenterHorizontally((prev) => !prev)}
+                            >Center Horizontally</Checkbox>
+                            <Box width="15px"></Box>
+                            <Checkbox
+                                mt="0.5em"
+                                checked={centerVertically()}
+                                onChange={() => setCenterVertically((prev) => !prev)}
+                            >Center Vertically</Checkbox>
                         </Flex>
                     </ModalBody>
                     <ModalFooter>

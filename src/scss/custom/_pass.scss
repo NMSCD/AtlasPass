@@ -30,11 +30,15 @@
     .user-drag-holder {
         display: flex;
         flex-direction: row;
+        justify-content: center;
         // overflow: none;
         position: absolute;
 
         .content {
             position: relative;
+            // display: flex;
+            // flex-direction: column;
+            // justify-content: center;
             border: 1px dashed transparent;
             transition: border-color 250ms ease-in-out;
             cursor: grab;
@@ -60,6 +64,7 @@
 
                 &.user-img {
                     padding: 1em;
+                    margin: 0 auto;
                     border: 1px dashed transparent;
                     transition: border-color 250ms ease-in-out;
                 }

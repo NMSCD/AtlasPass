@@ -20,6 +20,7 @@ import { ExportTemplate } from '../contracts/exportTemplate';
 import { UserUpload, UserUploadTypes } from '../contracts/userUpload';
 import { getAllElementsTemplateData, getElementTemplateData } from '../helper/documentHelper';
 import { downloadFile, downloadJsonAsFile, exportToPng } from '../helper/fileHelper';
+import { gridRefHeight, gridRefWidth } from '../helper/gridRefHelper';
 import { stringInputPopup } from '../helper/popupHelper';
 
 export const BuilderPage: Component = () => {
@@ -230,7 +231,6 @@ export const BuilderPage: Component = () => {
 
     const exportAsTemplate = async () => {
         const allJsonItems = getAllElementsTemplateData();
-        const gridRefData = gridRefKey().split('-') as any;
 
         const allData: ExportTemplate = {
             useCustomBackgroundImage: useCustomBackgroundImage(),
@@ -240,8 +240,8 @@ export const BuilderPage: Component = () => {
             backgroundImage: backgroundImage(),
             backgroundImageOpacity: backgroundImageOpacity(),
             promoteToShow: promoteToShow().toString(),
-            width: gridRefData[0],
-            height: gridRefData[1],
+            width: gridRefWidth(gridRefKey()),
+            height: gridRefHeight(gridRefKey()),
             userImages: userImages()
                 .map(usrI => allJsonItems.find(jsn => jsn.uuid === usrI.uuid)!)
                 .filter(usrI => usrI != null),
@@ -275,6 +275,8 @@ export const BuilderPage: Component = () => {
                                     <PassImage
                                         uuid={imgObj.uuid}
                                         name={imgObj.name}
+                                        gridWidth={gridRefWidth(gridRefKey())}
+                                        gridHeight={gridRefHeight(gridRefKey())}
                                         isSelected={imgObj.uuid === selectedElement()}
                                         src={imgObj.url ?? imgObj.data}
                                         templateData={imgObj.templateData}
@@ -290,6 +292,8 @@ export const BuilderPage: Component = () => {
                                     <PassText
                                         uuid={textObj.uuid}
                                         name={textObj.name}
+                                        gridWidth={gridRefWidth(gridRefKey())}
+                                        gridHeight={gridRefHeight(gridRefKey())}
                                         isSelected={textObj.uuid === selectedElement()}
                                         templateData={textObj.templateData}
                                         enableGridSnap={enableGrid()}
@@ -518,7 +522,7 @@ export const BuilderPage: Component = () => {
                 <Box textAlign="center" m="1em">
                     <Button width="$full" mt="0.5em" onClick={downloadPng}>Download</Button>
                     <Show when={gridRefKey() !== '0-0'} fallback={<Text mt="1em">Calculating...</Text>}>
-                        <Text mt="1em">Export resolution: <b>{gridRefKey().split('-')[0]}px</b> by <b>{gridRefKey().split('-')[1]}px</b></Text>
+                        <Text mt="1em">Export resolution: <b>{gridRefWidth(gridRefKey())}px</b> by <b>{gridRefHeight(gridRefKey())}px</b></Text>
                     </Show>
                 </Box>
             </Box>
