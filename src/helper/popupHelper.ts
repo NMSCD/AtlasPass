@@ -1,4 +1,5 @@
 import Swal, { SweetAlertInput } from "sweetalert2";
+import { imageFilter } from "../constants/background";
 import { timeout } from "./asyncHelper";
 
 export interface IStringInputPopupProps {
@@ -28,5 +29,25 @@ export const stringInputPopup = async (props: IStringInputPopupProps): Promise<s
     }
     const { value } = await firstSwalPromise;
 
+    return value;
+}
+
+export interface IFileInputPopupProps {
+    title: string;
+    acceptFilter?: string;
+}
+export const fileInputPopup = async (props: IFileInputPopupProps): Promise<any> => {
+
+    const firstSwalPromise = Swal.fire({
+        title: props.title,
+        input: 'file',
+        showCancelButton: true,
+        inputAttributes: {
+            'accept': props.acceptFilter ?? imageFilter,
+            'aria-label': props.title,
+        }
+    });
+
+    const { value } = await firstSwalPromise;
     return value;
 }

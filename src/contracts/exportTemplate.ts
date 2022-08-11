@@ -5,7 +5,7 @@ export interface ExportTemplate {
     gridSnapPoints: number;
     backgroundImage: string;
     backgroundImageOpacity: number;
-    promoteToShow: string;
+    promoteToShow: number;
     width: string;
     height: string;
     userImages: Array<ExportTemplateUserUpload>;
