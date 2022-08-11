@@ -267,6 +267,7 @@ export const PassDraggable: Component<IPassDraggableProps> = (props: IPassDragga
             id={props.partialTemplateData.uuid != null ? 'id' + props.partialTemplateData.uuid : undefined}
             ref={dialog}
             draggable={false}
+            onContextMenu={e => e?.preventDefault?.()}
             data-template={btoa(JSON.stringify({
                 ...props.partialTemplateData,
                 templateData: {
