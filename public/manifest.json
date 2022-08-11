@@ -1,0 +1,29 @@
+{
+    "name": "Atlas Pass - NMSCD",
+    "short_name": "Atlas Pass",
+    "description": "Create your own Atlas Pass quickly and easily using this NMSCD tool! Easily upload custom backgrounds and images, style text, snap elements to the grid, manage layers and so much more!",
+    "lang": "en-US",
+    "manifest_version": 2,
+    "version": "1.0.0",
+    "background_color": "#1b1f22",
+    "theme_color": "#00FFFF",
+    "display": "standalone",
+    "scope": "/",
+    "start_url": "/?standalone",
+    "developer": {
+        "name": "Kurt Lourens",
+        "url": "https://kurtlourens.com"
+    },
+    "icons": [
+        {
+            "src": "assets/favicon/favicon-96x96.png",
+            "sizes": "96x96",
+            "type": "image/png"
+        },
+        {
+            "src": "assets/favicon/favicon-32x32.png",
+            "sizes": "32x32",
+            "type": "image/png"
+        }
+    ]
+}
