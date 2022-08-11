@@ -4,6 +4,7 @@ import { IPassTextTemplateProps } from '../components/pass/passText';
 import { PromoteType } from '../constants/enum/promoteType';
 import { UserUpload, UserUploadTypes } from '../contracts/userUpload';
 import { timeout } from '../helper/asyncHelper';
+import { gridRefWidth } from '../helper/gridRefHelper';
 import { stringInputPopup } from '../helper/popupHelper';
 import { backgroundHexagon1 } from './background';
 import { NetworkState } from './enum/networkState';
@@ -43,7 +44,7 @@ export const customTemplate: TemplateBuilder = {
         const templObj = JSON.parse(templateJson);
         const minimumWaitPromise = timeout(2000);
 
-        func.setIsPortrait(true);
+        func.setIsPortrait(templObj.isPortrait);
         func.setUseCustomBackgroundImage(templObj.useCustomBackgroundImage);
         func.setBackgroundImageOpacity(templObj.backgroundImageOpacity);
         func.setBackgroundImage(templObj.backgroundImage);
@@ -56,9 +57,6 @@ export const customTemplate: TemplateBuilder = {
         return templObj;
     },
     build: async (func: IBuilderFunctions, gridRefKey: string, additionalData: any) => {
-        const gridRefDataArr = gridRefKey.split('-') as Array<any>;
-        const imageWidth = gridRefDataArr[0];
-        const imageHeight = gridRefDataArr[1];
 
         const images = additionalData.userImages.map((ui: any) => (
             {
@@ -118,7 +116,7 @@ export const nmscdTemplate: TemplateBuilder = {
         };
     },
     build: async (func: IBuilderFunctions, gridRefKey: string, additionalData: any) => {
-        const imageWidth = gridRefKey.split('-')[0] as any;
+        const imageWidth = gridRefWidth(gridRefKey) as any;
         const {
             username = 'Username',
             friendcode = 'FriendCode',

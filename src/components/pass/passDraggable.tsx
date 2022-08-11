@@ -1,6 +1,6 @@
-import { createStore } from 'solid-js/store';
-import { batch, Component, createMemo, JSX, onCleanup, onMount, Show } from 'solid-js';
 import classNames from 'classnames';
+import { batch, Component, JSX, onCleanup, onMount, Show } from 'solid-js';
+import { createStore } from 'solid-js/store';
 
 export interface IPassDraggableState {
     dragging: boolean,
@@ -18,6 +18,8 @@ export interface IPassDraggablePositionProps {
     initY?: number;
     initWidth?: number,
     initHeight?: number,
+    isCenterHorizontally?: boolean;
+    isCenterVertically?: boolean;
 }
 
 export interface IPassDraggableTemplateProps {
@@ -31,6 +33,8 @@ export interface IPassDraggableTemplateProps {
 export interface IPassDraggableProps extends IPassDraggablePositionProps {
     partialTemplateData: IPassDraggableTemplateProps;
     //
+    gridWidth: number;
+    gridHeight: number;
     isSelected?: boolean;
     enableGridSnap: boolean;
     gridSnapPoints: number;
@@ -74,6 +78,25 @@ export const PassDraggable: Component<IPassDraggableProps> = (props: IPassDragga
             setState('height', rect.height);
         });
     });
+
+    // createEffect(
+    //     on(
+    //         () => [
+    //             props.initX?.toString(),
+    //             props.initY?.toString(),
+    //             props.initWidth?.toString(),
+    //             props.initHeight?.toString(),
+    //         ].join(', '),
+    //         () => {
+    //             batch(() => {
+    //                 if (props.initX != null) setState('x', props.initX);
+    //                 if (props.initY != null) setState('y', props.initY);
+    //                 setState('width', props.initWidth);
+    //                 setState('height', props.initHeight);
+    //             });
+    //         }
+    //     )
+    // );
 
     onCleanup(() => {
         parent.removeEventListener('mousemove', mouseMove);
@@ -250,20 +273,23 @@ export const PassDraggable: Component<IPassDraggableProps> = (props: IPassDragga
                     ...props.partialTemplateData.templateData,
                     initHeight: state.height,
                     initWidth: state.width,
-                    initX: state.x,
-                    initY: state.y,
+                    initY: (props.isCenterVertically ? ((props.gridHeight - (state.height ?? 1)) / 2) : state.y),
+                    initX: (props.isCenterHorizontally ? ((props.gridWidth - (state.width ?? 1)) / 2) : state.x),
                 }
             }))}
             class={classNames('user-drag-holder', 'template-data', { 'is-selected': props.isSelected })}
             style={{
-                top: state.y + 'px',
-                left: state.x + 'px',
+                top: (props.isCenterVertically ? ((props.gridHeight - (state.height ?? 1)) / 2) : state.y) + 'px',
+                left: (props.isCenterHorizontally ? ((props.gridWidth - (state.width ?? 1)) / 2) : state.x) + 'px',
                 'z-index': getZIndex(props.partialTemplateData, props.isSelected),
                 'min-width': (state.width ?? 0) + 'px',
                 'min-height': (state.height ?? 0) + 'px',
                 transform: `rotate(${props.partialTemplateData?.templateData?.rotation ?? 0}deg)`
             }}>
-            <div class={classNames('content', { 'is-selected': props.isSelected == true })} onDblClick={props.onEdit}>
+            <div
+                class={classNames('content', { 'is-selected': props.isSelected == true })}
+                onDblClick={props.onEdit}
+            >
                 {props.renderChild(props, state, funcs)}
                 <Show when={props.onEdit != null}>
                     <div class="edit-handle show-on-hover" onClick={onEditClick}>

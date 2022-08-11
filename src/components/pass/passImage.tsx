@@ -9,12 +9,16 @@ import { IPassDraggableFunctions, IPassDraggablePositionProps, IPassDraggablePro
 export interface IPassImageTemplateProps extends IPassDraggablePositionProps {
     rotation?: number;
     zIndex?: number;
+    isCenterHorizontally?: boolean;
+    isCenterVertically?: boolean;
 }
 
 interface IPassImageProps {
     src: string;
     uuid: string;
     name?: string;
+    gridWidth: number;
+    gridHeight: number;
     isSelected: boolean;
     enableGridSnap: boolean;
     gridSnapPoints: number;
@@ -27,6 +31,8 @@ export const PassImage: Component<IPassImageProps> = (props: IPassImageProps) =>
     const {
         rotation: templRotation = 0,
         zIndex: templZIndex = 1,
+        isCenterHorizontally = false,
+        isCenterVertically = false,
     } = props.templateData ?? anyObject;
 
     const { isOpen, onOpen, onClose } = createDisclosure();
@@ -35,6 +41,8 @@ export const PassImage: Component<IPassImageProps> = (props: IPassImageProps) =>
     const [zIndex, setZIndex] = createSignal(templZIndex);
     const [horizontalFlip, setHorizontalFlip] = createSignal(false);
     const [verticalFlip, setVerticalFlip] = createSignal(false);
+    const [centerHorizontally, setCenterHorizontally] = createSignal(isCenterHorizontally);
+    const [centerVertically, setCenterVertically] = createSignal(isCenterVertically);
 
     const renderImage = (
         draggableProps: IPassDraggableProps,
@@ -44,17 +52,17 @@ export const PassImage: Component<IPassImageProps> = (props: IPassImageProps) =>
 
         let styleWidth = createMemo(() => {
             if (draggableState.width != undefined && draggableState.width > 0) {
-                return draggableState.width + "px";
+                return draggableState.width + 'px';
             } else {
-                return "100px";
+                return '100px';
             }
         });
 
         let styleHeight = createMemo(() => {
             if (draggableState.height != undefined && draggableState.height > 0) {
-                return draggableState.height + "px";
+                return draggableState.height + 'px';
             } else {
-                return "100px";
+                return '100px';
             }
         });
 
@@ -85,6 +93,8 @@ export const PassImage: Component<IPassImageProps> = (props: IPassImageProps) =>
             <PassDraggable
                 {...props}
                 {...props.templateData}
+                isCenterHorizontally={centerHorizontally()}
+                isCenterVertically={centerVertically()}
                 partialTemplateData={{
                     uuid: props.uuid,
                     name: props.name,
@@ -132,6 +142,19 @@ export const PassImage: Component<IPassImageProps> = (props: IPassImageProps) =>
                                 checked={verticalFlip()}
                                 onChange={() => setVerticalFlip((prev) => !prev)}
                             >Flip Vertical</Checkbox>
+                        </Flex>
+                        <Flex>
+                            <Checkbox
+                                mt="0.5em"
+                                checked={centerHorizontally()}
+                                onChange={() => setCenterHorizontally((prev) => !prev)}
+                            >Center Horizontally</Checkbox>
+                            <Box width="15px"></Box>
+                            <Checkbox
+                                mt="0.5em"
+                                checked={centerVertically()}
+                                onChange={() => setCenterVertically((prev) => !prev)}
+                            >Center Vertically</Checkbox>
                         </Flex>
                     </ModalBody>
                     <ModalFooter>
