@@ -31,4 +31,5 @@ export const builtInBackgrounds: Array<string> = [
 ];
 
 
-export const imageFilter = "image/*"
+export const imageFilter = "image/*";
+export const jsonFilter = "txt/json";

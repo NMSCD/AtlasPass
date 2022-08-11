@@ -239,7 +239,7 @@ export const BuilderPage: Component = () => {
             gridSnapPoints: gridSnapPoints(),
             backgroundImage: backgroundImage(),
             backgroundImageOpacity: backgroundImageOpacity(),
-            promoteToShow: promoteToShow().toString(),
+            promoteToShow: promoteToShow(),
             width: gridRefWidth(gridRefKey()),
             height: gridRefHeight(gridRefKey()),
             userImages: userImages()

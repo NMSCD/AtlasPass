@@ -2,11 +2,13 @@ import { v4 as uuidv4 } from 'uuid';
 import { IPassImageTemplateProps } from '../components/pass/passImage';
 import { IPassTextTemplateProps } from '../components/pass/passText';
 import { PromoteType } from '../constants/enum/promoteType';
+import { ExportTemplate } from '../contracts/exportTemplate';
 import { UserUpload, UserUploadTypes } from '../contracts/userUpload';
 import { timeout } from '../helper/asyncHelper';
+import { readFileAsync } from '../helper/fileHelper';
 import { gridRefWidth } from '../helper/gridRefHelper';
-import { stringInputPopup } from '../helper/popupHelper';
-import { backgroundHexagon1 } from './background';
+import { fileInputPopup, stringInputPopup } from '../helper/popupHelper';
+import { backgroundHexagon1, jsonFilter } from './background';
 import { NetworkState } from './enum/networkState';
 import { builtInFontExpeditionfont, builtInFontNMSfontGeoSans } from './fonts';
 import { templatePath } from './images';
@@ -36,12 +38,13 @@ export const customTemplate: TemplateBuilder = {
     imgUrl: templatePath + 'nmscd.png',
     initial: async (func: IBuilderFunctions, gridRefKey: string): Promise<any> => {
 
-        const templateJson = await stringInputPopup({
-            title: 'Paste template JSON',
-            input: 'textarea',
-            focusOnInput: true,
+        const templateJsonRef = await fileInputPopup({
+            title: 'Select template JSON',
+            acceptFilter: jsonFilter,
         });
-        const templObj = JSON.parse(templateJson);
+        const templateJson = await readFileAsync(templateJsonRef);
+        console.log(templateJson.toString());
+        const templObj: ExportTemplate = JSON.parse(templateJson.toString());
         const minimumWaitPromise = timeout(2000);
 
         func.setIsPortrait(templObj.isPortrait);
@@ -52,31 +55,51 @@ export const customTemplate: TemplateBuilder = {
         func.setGridSnapPoints(templObj.gridSnapPoints);
         func.setPromoteToShow(templObj.promoteToShow);
 
+        for (let imageIndex = 0; imageIndex < templObj.userImages.length; imageIndex++) {
+            const userImage = templObj.userImages[imageIndex];
+            let userImageUrl = userImage.url;
+            if (userImageUrl.includes('/assets/img/') == false) {
+                const userImageRef = await fileInputPopup({
+                    title: userImage.name ?? 'No image name specified',
+                });
+                userImageUrl = URL.createObjectURL(userImageRef);
+            }
+
+            templObj.userImages[imageIndex].url = userImageUrl;
+        }
+
+        for (let textIndex = 0; textIndex < templObj.userTexts.length; textIndex++) {
+            const userText = templObj.userTexts[textIndex];
+            const displayText = await stringInputPopup({
+                title: userText.name ?? 'No text name specified',
+                input: 'text',
+                focusOnInput: true,
+            });
+
+            templObj.userTexts[textIndex].templateData.displayText = displayText;
+        }
+
         await minimumWaitPromise;
 
         return templObj;
     },
     build: async (func: IBuilderFunctions, gridRefKey: string, additionalData: any) => {
 
-        const images = additionalData.userImages.map((ui: any) => (
-            {
-                uuid: uuidv4(),
-                type: ui.type,
-                name: ui.name,
-                url: ui.url,
-                templateData: { ...ui.templateData }
-            }
-        ));
+        const images = additionalData.userImages.map((ui: any) => ({
+            uuid: uuidv4(),
+            type: ui.type,
+            name: ui.name,
+            url: ui.url,
+            templateData: { ...ui.templateData }
+        }));
         func.setUserImages(images);
 
-        const texts = additionalData.userTexts.map((ui: any) => (
-            {
-                uuid: uuidv4(),
-                type: ui.type,
-                name: ui.name,
-                templateData: { ...ui.templateData }
-            }
-        ));
+        const texts = additionalData.userTexts.map((ui: any) => ({
+            uuid: uuidv4(),
+            type: ui.type,
+            name: ui.name,
+            templateData: { ...ui.templateData }
+        }));
         func.setUserTexts(texts);
     }
 }
@@ -134,6 +157,7 @@ export const nmscdTemplate: TemplateBuilder = {
                     initX: 0,
                     initY: 100,
                     zIndex: 10,
+                    isCenterHorizontally: true,
                 }
             }
         ]);
@@ -147,10 +171,11 @@ export const nmscdTemplate: TemplateBuilder = {
                     fontAlign: 'center',
                     fontFamily: builtInFontNMSfontGeoSans,
                     initHeight: 40,
-                    initWidth: imageWidth,
+                    initWidth: imageWidth / 2,
                     initX: 0,
                     initY: 380,
                     zIndex: 10,
+                    isCenterHorizontally: true,
                 }
             },
             {
@@ -162,10 +187,11 @@ export const nmscdTemplate: TemplateBuilder = {
                     fontAlign: 'center',
                     fontFamily: builtInFontNMSfontGeoSans,
                     initHeight: 40,
-                    initWidth: imageWidth,
+                    initWidth: imageWidth / 2,
                     initX: 0,
                     initY: 405,
                     zIndex: 10,
+                    isCenterHorizontally: true,
                 }
             },
             {
@@ -178,10 +204,11 @@ export const nmscdTemplate: TemplateBuilder = {
                     fontFamily: builtInFontExpeditionfont,
                     fontColour: 'red',
                     initHeight: 40,
-                    initWidth: imageWidth,
+                    initWidth: imageWidth / 2,
                     initX: 0,
                     initY: 430,
                     zIndex: 10,
+                    isCenterHorizontally: true,
                 }
             }
         ]);
