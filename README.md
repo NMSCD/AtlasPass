@@ -1,6 +1,8 @@
 <div align="center">
   
   ![header](./.github/images/bannerV1.png)
+
+  ### Create your own Atlas Pass quickly and easily using this NMSCD tool! Easily upload custom backgrounds and images, style text, snap elements to the grid, manage layers and so much more!
   
   <br />
   
@@ -8,14 +10,16 @@
   [![licence](./.github/images/licence-badge.svg)](https://github.com/NMSCD/AtlasPass/blob/main/LICENCE.md)<br />
   [![Supported by the No Man's Sky Community Developers & Designers](https://raw.githubusercontent.com/NMSCD/About/master/badge/purple-ftb.svg)][nmscd] 
   
-  <br /> 
 </div>
-
-Create your own Atlas Pass quickly and easily using this NMSCD tool! Easily upload custom backgrounds and images, style text, snap elements to the grid, manage layers and so much more!
 
 <br />
 
 ## 🏃‍♂️ Running the project
+
+![SolidJS](https://img.shields.io/badge/Solid%20JS-2C4F7C?style=for-the-badge&logo=solid&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-B73BFE?style=for-the-badge&logo=vite&logoColor=FFD62E)
+![Typescript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
+<br/>![Github Actions](https://img.shields.io/badge/Github%20Actions-2088FF?style=for-the-badge&logo=github%20actions&logoColor=white)
   
 ### Requirements
 - [NodeJS](https://nodejs.org/en/download/)
