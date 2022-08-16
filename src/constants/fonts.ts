@@ -4,6 +4,7 @@ import { FontOption } from "../contracts/fontOption";
 export const builtInFontNMSfontFuturaProBook = 'NMSFuturaProBook';
 export const builtInFontNMSfontGeoSans = 'NMSGeoSans';
 export const builtInFontExpeditionfont = 'NMS Alphabet';
+export const builtInFontPortalfont = 'NMS-Glyphs-Mono';
 
 export const builtInFonts: Array<FontOption> = [
     {
@@ -21,6 +22,12 @@ export const builtInFonts: Array<FontOption> = [
     {
         name: 'Expedition font',
         fontFamily: builtInFontExpeditionfont,
+    },
+    {
+        name: 'NMS portals',
+        allowedChars: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', 'a', 'b', 'c', 'd', 'e', 'f'],
+        maxChars: 12,
+        fontFamily: builtInFontPortalfont,
     },
 ];
 

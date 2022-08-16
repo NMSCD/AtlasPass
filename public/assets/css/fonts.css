@@ -30,3 +30,9 @@
     font-weight: normal;
     text-rendering: optimizeLegibility;
 }
+
+/* font-family: NMS Glyphs */
+@font-face {
+    font-family: 'NMS-Glyphs-Mono';
+    src: url(/assets/fonts/NMS-Glyphs-Mono.ttf) format('truetype');
+}

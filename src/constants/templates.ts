@@ -43,7 +43,6 @@ export const customTemplate: TemplateBuilder = {
             acceptFilter: jsonFilter,
         });
         const templateJson = await readFileAsync(templateJsonRef);
-        console.log(templateJson.toString());
         const templObj: ExportTemplate = JSON.parse(templateJson.toString());
         const minimumWaitPromise = timeout(2000);
 

@@ -57,6 +57,34 @@ export const PassText: Component<IPassTextProps> = (props: IPassTextProps) => {
     const [centerHorizontally, setCenterHorizontally] = createSignal(isCenterHorizontally);
     const [centerVertically, setCenterVertically] = createSignal(isCenterVertically);
 
+    const onFontFamilyChange = (fontFamily: string) => {
+        setFontFamily(fontFamily);
+        const fontObj = builtInFonts.find(bf => bf.fontFamily == fontFamily);
+        if (fontObj?.allowedChars == null) return;
+
+        setDisplayText((text) =>
+            onlyAllowedChars(text, fontObj.allowedChars!).substring(0, fontObj.maxChars).toUpperCase()
+        );
+    }
+
+    const onTextEdit = (e: any) => {
+        const fontObj = builtInFonts.find(bf => bf.fontFamily == fontFamily());
+
+        const text = e?.target?.value ?? '';
+        if (fontObj?.allowedChars == null) {
+            setDisplayText(text);
+            return;
+        }
+
+        const newText = onlyAllowedChars(text, fontObj.allowedChars!).substring(0, fontObj.maxChars).toUpperCase();
+        e.target.value = newText;
+        setDisplayText(newText);
+    }
+
+    const onlyAllowedChars = (text: string, allowedChars: Array<string>) => text
+        .split('')
+        .filter((t: string) => allowedChars.includes(t.toLowerCase()))
+        .join('');
 
     const renderText = (
         draggableProps: IPassDraggableProps,
@@ -132,11 +160,11 @@ export const PassText: Component<IPassTextProps> = (props: IPassTextProps) => {
                     <ModalCloseButton />
                     <ModalHeader>Text options</ModalHeader>
                     <ModalBody>
-                        <FormControl mt="0.5em" mb="0.5em">
+                        <FormControl mt="0.5em" mb="0.5em" class={displayText()}>
                             <FormLabel for="text-to-display">Text to display</FormLabel>
                             <Input
                                 id="text-to-display"
-                                onInput={(e: any) => setDisplayText(e?.target?.value ?? '')}
+                                onInput={onTextEdit}
                                 value={displayText()}
                             />
                         </FormControl>
@@ -146,7 +174,7 @@ export const PassText: Component<IPassTextProps> = (props: IPassTextProps) => {
                                     label="Font"
                                     placeholder="Font"
                                     options={builtInFonts.map(f => ({ name: f.name, value: f.fontFamily }))}
-                                    setValue={setFontFamily}
+                                    setValue={onFontFamilyChange}
                                     value={fontFamily}
                                 />
                             </FormControl>
