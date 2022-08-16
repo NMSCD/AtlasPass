@@ -59,7 +59,7 @@ export const LayerList: Component<ILayerListProps> = (props: ILayerListProps) =>
                         </Tooltip>
                         <Tooltip label="click to edit name" placement="top">
                             <Box flex="1" class="max-lines-1 pointer" pl="0.5em" onClick={props.editElementName(userUpload.uuid, userUpload.type, userUpload.name)}>
-                                {userUpload.name ?? userUpload.uuid}
+                                {userUpload.name ?? 'Unknown'}
                             </Box>
                         </Tooltip>
                         <Box width="4.5em">
