@@ -11,8 +11,7 @@ export const backgroundAtlasPass1 = backgroundsFolder + 'atlasPass1.png';
 export const backgroundAtlasPass2 = backgroundsFolder + 'atlasPass2.png';
 
 export const builtInBackgrounds: Array<string> = [
-    'atlasPass1.png',
-    'atlasPass2.png',
+    'atlasPass3.png',
     'atlasPassCover1.jpg',
     'hexagon1.png',
     'nms6thAnniversary.webp',
